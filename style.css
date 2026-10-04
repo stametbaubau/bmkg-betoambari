@@ -1,0 +1,3789 @@
+/*
+Theme Name: BMKG Betoambari
+Theme URI: https://stametbetoambari.wordpress.com
+Author: Stasiun Meteorologi Betoambari
+Author URI: https://www.bmkg.go.id
+Description: Tema resmi Stasiun Meteorologi Betoambari - BMKG. Mengikuti standar desain BMKG Pusat. White theme dominan, typografi bersih, glassmorphism subtle.
+Version: 4.0.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 7.4
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: bmkg-betoambari
+*/
+
+/* ==========================================================================
+   DESIGN TOKENS - BMKG STANDARD
+   ========================================================================== */
+:root {
+	/* Warna utama - navy blue BMKG */
+	--bmkg-navy:         #1a3a6c;
+	--bmkg-navy-dark:    #0f2447;
+	--bmkg-navy-soft:    #2e5090;
+	--bmkg-blue:         #0066cc;
+	--bmkg-blue-light:   #e8f1fb;
+	--bmkg-blue-hover:   #0052a3;
+
+	/* Warna netral */
+	--bmkg-white:        #ffffff;
+	--bmkg-bg:           #ffffff;
+	--bmkg-bg-soft:      #f7f9fc;
+	--bmkg-border:       #e5e9f0;
+	--bmkg-border-soft:  #eef1f5;
+	--bmkg-text:         #1a2b4d;
+	--bmkg-text-soft:    #4a5568;
+	--bmkg-text-muted:   #6b7280;
+
+	/* Warna status */
+	--bmkg-warning:      #f59e0b;
+	--bmkg-warning-bg:   #fff8e6;
+	--bmkg-warning-line: #fde68a;
+	--bmkg-danger:       #dc2626;
+	--bmkg-success:      #16a34a;
+	--bmkg-info:         #0284c7;
+
+	/* Warna cuaca (untuk marker peta & legend) */
+	--bmkg-cerah:        #f59e0b;
+	--bmkg-berawan:      #64748b;
+	--bmkg-hujan:        #0284c7;
+	--bmkg-petir:        #7c3aed;
+
+	/* Warna AQI */
+	--bmkg-aqi-good:     #16a34a;
+	--bmkg-aqi-ok:       #0066cc;
+	--bmkg-aqi-warn:     #f59e0b;
+	--bmkg-aqi-bad:      #dc2626;
+
+	/* Aksen teal — identitas visual Betoambari */
+	--bmkg-teal:         #0d9488;
+	--bmkg-teal-light:   #e6f7f5;
+	--bmkg-teal-hover:   #0f766e;
+
+	/* Radius */
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 14px;
+	--radius-xl: 20px;
+	--radius-full: 999px;
+
+	/* Shadow subtle (bukan glow, bukan gradient) */
+	--shadow-xs: 0 1px 2px rgba(15, 36, 71, 0.04);
+	--shadow-sm: 0 1px 3px rgba(15, 36, 71, 0.06), 0 1px 2px rgba(15, 36, 71, 0.04);
+	--shadow-md: 0 4px 12px rgba(15, 36, 71, 0.08);
+	--shadow-lg: 0 8px 24px rgba(15, 36, 71, 0.10);
+
+	/* Typography */
+	--font-sans: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+	--font-mono: 'JetBrains Mono', 'SF Mono', Consolas, Monaco, monospace;
+
+	/* Layout */
+	--container-max: 1280px;
+	--container-pad: 24px;
+	--section-gap:   64px;
+}
+
+/* ==========================================================================
+   RESET & GLOBAL
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+	margin: 0;
+	font-family: var(--font-sans);
+	font-size: 15px;
+	line-height: 1.6;
+	color: var(--bmkg-text);
+	background: var(--bmkg-bg);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+img, svg { max-width: 100%; display: block; }
+button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+a { color: var(--bmkg-blue); text-decoration: none; transition: color .15s ease; }
+a:hover { color: var(--bmkg-blue-hover); }
+
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	letter-spacing: -0.01em;
+	line-height: 1.25;
+}
+
+.bmkg-container {
+	max-width: var(--container-max);
+	margin: 0 auto;
+	padding-left: var(--container-pad);
+	padding-right: var(--container-pad);
+}
+
+/* ==========================================================================
+   TOP BAR — Tanggal + Jam Standar Waktu Indonesia (mengikuti BMKG Pusat)
+   ========================================================================== */
+.bmkg-topbar {
+	background: var(--bmkg-bg-soft);
+	border-bottom: 1px solid var(--bmkg-border);
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	color: var(--bmkg-text-muted);
+}
+
+.bmkg-topbar__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 6px 0;
+}
+
+.bmkg-topbar__date {
+	font-weight: 600;
+	text-transform: uppercase;
+	color: var(--bmkg-text-soft);
+}
+
+.bmkg-topbar__clock {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	text-transform: uppercase;
+}
+
+.bmkg-topbar__clock strong {
+	font-family: var(--font-mono);
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--bmkg-danger);
+	letter-spacing: 0.02em;
+}
+
+.bmkg-topbar__clock em {
+	font-style: normal;
+	font-weight: 500;
+	color: var(--bmkg-success);
+}
+
+/* ==========================================================================
+   HEADER — Sticky nav bar (BMKG Pusat style)
+   ========================================================================== */
+.bmkg-header {
+	position: sticky;
+	top: 0;
+	z-index: 100;
+	background: var(--bmkg-white);
+	border-bottom: 1px solid var(--bmkg-border);
+}
+
+.bmkg-header__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 12px 0;
+}
+
+.bmkg-header__brand {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	text-decoration: none;
+	flex-shrink: 0;
+}
+
+.bmkg-header__brand:hover { text-decoration: none; }
+
+.bmkg-header__logo {
+	width: 44px;
+	height: 44px;
+	object-fit: contain;
+}
+
+.bmkg-header__brand-text strong {
+	display: block;
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	line-height: 1.2;
+}
+
+.bmkg-header__brand-text span {
+	display: block;
+	font-size: 11.5px;
+	color: var(--bmkg-text-muted);
+	line-height: 1.2;
+	margin-top: 2px;
+}
+
+/* ---- Header spacer for non-front-page ---- */
+.bmkg-header-spacer { height: 0; }
+
+/* ---- Main Nav ---- */
+.bmkg-nav {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+}
+
+.bmkg-nav__list {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	gap: 2px;
+}
+
+.bmkg-nav__list > li > a,
+.bmkg-nav__toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 8px 14px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--bmkg-text);
+	border-radius: var(--radius-sm);
+	transition: background .15s ease, color .15s ease;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.bmkg-nav__list > li > a:hover,
+.bmkg-nav__toggle:hover {
+	background: var(--bmkg-bg-soft);
+	color: var(--bmkg-navy);
+}
+
+.bmkg-nav__toggle svg {
+	transition: transform .2s ease;
+}
+
+.bmkg-nav__toggle[aria-expanded="true"] svg {
+	transform: rotate(180deg);
+}
+
+/* ---- Dropdown submenu ---- */
+.bmkg-nav__dropdown { position: relative; }
+
+.bmkg-nav__sub {
+	display: none;
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	min-width: 220px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	padding: 6px 0;
+	list-style: none;
+	margin: 0;
+	z-index: 200;
+}
+
+.bmkg-nav__sub.is-open { display: block; }
+
+.bmkg-nav__sub li a {
+	display: block;
+	padding: 9px 18px;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--bmkg-text);
+	text-decoration: none;
+	transition: background .12s ease, color .12s ease;
+}
+
+.bmkg-nav__sub li a:hover {
+	background: var(--bmkg-bg-soft);
+	color: var(--bmkg-navy);
+}
+
+/* ---- Contact Center CTA button (BMKG Pusat style) ---- */
+.bmkg-header__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 20px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bmkg-text);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-full);
+	text-decoration: none;
+	white-space: nowrap;
+	transition: border-color .15s ease, background .15s ease;
+	flex-shrink: 0;
+}
+
+.bmkg-header__cta:hover {
+	border-color: var(--bmkg-navy);
+	background: var(--bmkg-bg-soft);
+	color: var(--bmkg-navy);
+}
+
+/* ---- Mobile burger button ---- */
+.bmkg-header__burger {
+	display: none;
+	flex-direction: column;
+	gap: 5px;
+	padding: 8px;
+	width: 40px;
+	height: 40px;
+	align-items: center;
+	justify-content: center;
+}
+
+.bmkg-header__burger span {
+	display: block;
+	width: 22px;
+	height: 2px;
+	background: var(--bmkg-navy);
+	border-radius: 2px;
+	transition: transform .2s ease, opacity .2s ease;
+}
+
+.bmkg-header__burger.is-active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.bmkg-header__burger.is-active span:nth-child(2) { opacity: 0; }
+.bmkg-header__burger.is-active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---- Mobile nav ---- */
+@media (max-width: 1060px) {
+	.bmkg-header__cta { display: none; }
+	.bmkg-header__burger { display: flex; }
+
+	.bmkg-nav {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		background: var(--bmkg-white);
+		border-bottom: 1px solid var(--bmkg-border);
+		box-shadow: var(--shadow-lg);
+		padding: 12px 0;
+	}
+
+	.bmkg-nav.is-open { display: block; }
+
+	.bmkg-nav__list {
+		flex-direction: column;
+		gap: 0;
+		padding: 0 var(--container-pad);
+	}
+
+	.bmkg-nav__list > li > a,
+	.bmkg-nav__toggle {
+		width: 100%;
+		padding: 12px 0;
+		border-bottom: 1px solid var(--bmkg-border-soft);
+		border-radius: 0;
+		justify-content: space-between;
+	}
+
+	.bmkg-nav__sub {
+		position: static;
+		box-shadow: none;
+		border: 0;
+		padding: 0 0 0 16px;
+		border-radius: 0;
+	}
+
+	.bmkg-nav__sub li a {
+		padding: 10px 0;
+		border-bottom: 1px solid var(--bmkg-border-soft);
+	}
+}
+
+@media (max-width: 560px) {
+	.bmkg-topbar__clock { font-size: 10px; }
+	.bmkg-topbar__date  { display: none; }
+	.bmkg-header__brand-text span { display: none; }
+}
+
+/* ==========================================================================
+   NOTICE BAR
+   ========================================================================== */
+.bmkg-notice-bar { padding: 20px 0 0; }
+
+.bmkg-notice {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 16px 20px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-xs);
+}
+
+.bmkg-notice__icon { flex-shrink: 0; color: var(--bmkg-text); margin-top: 2px; }
+
+.bmkg-notice__text strong { display: block; color: var(--bmkg-text); font-size: 14px; margin-bottom: 2px; }
+.bmkg-notice__text span { display: block; color: var(--bmkg-text-muted); font-size: 13px; }
+.bmkg-notice__text a { text-decoration: underline; color: var(--bmkg-blue); }
+
+/* ==========================================================================
+   SEARCH HERO
+   ========================================================================== */
+.bmkg-search-hero { padding: 24px 0 12px; }
+
+.bmkg-search-hero__row {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.bmkg-search {
+	flex: 1 1 400px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 20px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-full);
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.bmkg-search:focus-within {
+	border-color: var(--bmkg-blue);
+	box-shadow: 0 0 0 3px rgba(0,102,204,0.08);
+}
+
+.bmkg-search svg { color: var(--bmkg-text-muted); flex-shrink: 0; }
+
+.bmkg-search__input {
+	flex: 1;
+	border: 0;
+	outline: 0;
+	background: transparent;
+	font-size: 14px;
+	color: var(--bmkg-text);
+}
+
+.bmkg-search__input::placeholder { color: var(--bmkg-text-muted); }
+
+.bmkg-weather-pill {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 22px;
+	background: var(--bmkg-blue);
+	color: var(--bmkg-white);
+	border-radius: var(--radius-full);
+	text-decoration: none;
+	transition: background .15s ease;
+}
+
+.bmkg-weather-pill:hover { background: var(--bmkg-blue-hover); color: var(--bmkg-white); }
+
+.bmkg-weather-pill__body { display: flex; flex-direction: column; line-height: 1.2; }
+.bmkg-weather-pill__body strong { font-size: 15px; font-weight: 700; }
+.bmkg-weather-pill__body em { font-style: normal; font-size: 12px; opacity: 0.85; }
+
+/* ==========================================================================
+   SECTION UTILITIES
+   ========================================================================== */
+.bmkg-section { padding: 32px 0; }
+.bmkg-section--news { padding-bottom: 64px; }
+
+.bmkg-section__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-bottom: 20px;
+	flex-wrap: wrap;
+}
+
+.bmkg-section__title {
+	font-size: 22px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 16px;
+}
+
+.bmkg-section__title::after {
+	content: "";
+	display: block;
+	width: 40px;
+	height: 3px;
+	background: var(--bmkg-teal);
+	border-radius: 2px;
+	margin-top: 8px;
+}
+
+.bmkg-section__head .bmkg-section__title { margin: 0; }
+
+.bmkg-grid { display: grid; gap: 20px; }
+.bmkg-grid--map { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
+.bmkg-grid--3   { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bmkg-grid--2   { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+@media (max-width: 960px){
+	.bmkg-grid--map,
+	.bmkg-grid--3,
+	.bmkg-grid--2 { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   MAP CARD
+   ========================================================================== */
+.bmkg-map-card {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+}
+
+.bmkg-map-card__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 12px 16px;
+	background: var(--bmkg-bg-soft);
+	border-bottom: 1px solid var(--bmkg-border);
+}
+
+.bmkg-map-card__hint { margin: 0; font-size: 13px; color: var(--bmkg-text-muted); }
+
+.bmkg-map-card__close {
+	width: 28px; height: 28px;
+	display: inline-flex; align-items: center; justify-content: center;
+	color: var(--bmkg-text-muted);
+	border-radius: var(--radius-sm);
+	transition: background .15s ease, color .15s ease;
+}
+
+.bmkg-map-card__close:hover { background: var(--bmkg-border); color: var(--bmkg-text); }
+
+.bmkg-map { height: 480px; width: 100%; background: var(--bmkg-bg-soft); }
+
+.bmkg-map-card__legend {
+	display: flex; gap: 16px; flex-wrap: wrap;
+	padding: 12px 16px;
+	border-top: 1px solid var(--bmkg-border);
+	font-size: 12px;
+	color: var(--bmkg-text-soft);
+}
+
+.bmkg-map-card__legend .dot {
+	display: inline-block;
+	width: 10px; height: 10px;
+	border-radius: 50%;
+	margin-right: 6px;
+	vertical-align: middle;
+}
+.dot--cerah   { background: var(--bmkg-cerah); }
+.dot--berawan { background: var(--bmkg-berawan); }
+.dot--hujan   { background: var(--bmkg-hujan); }
+.dot--petir   { background: var(--bmkg-petir); }
+
+/* ==========================================================================
+   LEAFLET CUSTOM MARKER
+   ========================================================================== */
+.bmkg-marker {
+	position: relative;
+	width: 56px; height: 56px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background: var(--bmkg-white);
+	border: 2px solid var(--bmkg-border);
+	border-radius: 50%;
+	box-shadow: var(--shadow-md);
+	transition: transform .2s ease, border-color .2s ease;
+}
+
+.bmkg-marker:hover { transform: scale(1.1); }
+.bmkg-marker--cerah   { border-color: var(--bmkg-cerah); }
+.bmkg-marker--berawan { border-color: var(--bmkg-berawan); }
+.bmkg-marker--hujan   { border-color: var(--bmkg-hujan); }
+.bmkg-marker--petir   { border-color: var(--bmkg-petir); }
+
+.bmkg-marker__emoji { font-size: 22px; line-height: 1; }
+.bmkg-marker__temp {
+	font-size: 10px;
+	font-weight: 700;
+	color: var(--bmkg-text);
+	line-height: 1;
+	margin-top: 2px;
+}
+
+.leaflet-tooltip {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-sm);
+	box-shadow: var(--shadow-md);
+	color: var(--bmkg-text);
+	font-family: var(--font-sans);
+	font-size: 12px;
+	padding: 8px 12px;
+}
+.leaflet-tooltip strong { color: var(--bmkg-navy); }
+
+/* ==========================================================================
+   WARNING CARD (Peringatan Cuaca Buruk)
+   ========================================================================== */
+.bmkg-warning-card {
+	background: var(--bmkg-warning-bg);
+	border: 1px solid var(--bmkg-warning-line);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+}
+
+.bmkg-warning-card__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 16px 20px;
+	background: var(--bmkg-warning);
+	color: var(--bmkg-navy-dark);
+}
+
+.bmkg-warning-card__head h2 { color: inherit; font-size: 16px; font-weight: 700; margin: 0; }
+
+.bmkg-warning-card__more {
+	width: 32px; height: 32px;
+	display: inline-flex; align-items: center; justify-content: center;
+	background: var(--bmkg-white);
+	color: var(--bmkg-navy);
+	border-radius: 50%;
+	transition: background .15s ease;
+}
+.bmkg-warning-card__more:hover { background: var(--bmkg-bg-soft); }
+
+.bmkg-warning-card__body { padding: 20px; }
+
+.bmkg-warning-card__headline {
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	font-size: 15px;
+	margin: 0 0 16px;
+	line-height: 1.4;
+}
+
+.bmkg-warning-meta {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+	margin: 0 0 16px;
+}
+.bmkg-warning-meta div dt { font-size: 11px; color: var(--bmkg-text-muted); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px; }
+.bmkg-warning-meta div dd { font-size: 13px; color: var(--bmkg-text); font-weight: 600; margin: 0; }
+
+.bmkg-warning-card__label { font-size: 12px; font-weight: 600; color: var(--bmkg-text-soft); margin: 0 0 8px; }
+
+.bmkg-warning-card__areas ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.bmkg-warning-card__areas li {
+	display: flex; align-items: center; gap: 6px;
+	font-size: 13px; color: var(--bmkg-text);
+}
+.bmkg-warning-card__areas li svg { color: var(--bmkg-warning); fill: var(--bmkg-warning); }
+
+.bmkg-warning-card__empty {
+	text-align: center;
+	color: var(--bmkg-text-muted);
+	font-size: 14px;
+	padding: 20px 0;
+}
+
+/* ==========================================================================
+   INFO CARD (Gempa, AQI)
+   ========================================================================== */
+.bmkg-info-card {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+	display: flex;
+	flex-direction: column;
+}
+
+.bmkg-info-card__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 18px;
+	background: var(--bmkg-navy);
+	color: var(--bmkg-white);
+}
+
+.bmkg-info-card__head h2 { color: inherit; font-size: 15px; font-weight: 700; margin: 0; }
+
+.bmkg-info-card__more {
+	width: 30px; height: 30px;
+	display: inline-flex; align-items: center; justify-content: center;
+	background: rgba(255,255,255,0.15);
+	color: var(--bmkg-white);
+	border-radius: 50%;
+	transition: background .15s ease;
+}
+.bmkg-info-card__more:hover { background: rgba(255,255,255,0.25); color: var(--bmkg-white); }
+
+.bmkg-info-card__body { padding: 18px; flex: 1; }
+
+.bmkg-info-card__body--aqi {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.bmkg-info-card__lead {
+	font-size: 13px;
+	color: var(--bmkg-text-soft);
+	margin: 0 0 12px;
+	line-height: 1.5;
+}
+
+.bmkg-info-card__empty {
+	text-align: center;
+	color: var(--bmkg-text-muted);
+	padding: 24px 0;
+	font-size: 14px;
+}
+
+.bmkg-info-card__shake {
+	padding: 12px 18px 18px;
+	margin: 0;
+}
+.bmkg-info-card__shake img {
+	width: 100%;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--bmkg-border);
+}
+
+/* Tags (dirasakan wilayah) */
+.bmkg-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.bmkg-tag {
+	display: inline-block;
+	padding: 4px 10px;
+	background: var(--bmkg-blue-light);
+	color: var(--bmkg-navy);
+	border-radius: var(--radius-full);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+/* Quake meta */
+.bmkg-quake-meta { display: grid; gap: 10px; margin: 0; }
+.bmkg-quake-meta div { display: grid; grid-template-columns: 130px 1fr; gap: 8px; align-items: center; }
+.bmkg-quake-meta dt {
+	display: flex; align-items: center; gap: 8px;
+	font-size: 13px; color: var(--bmkg-text-soft); font-weight: 500;
+}
+.bmkg-quake-meta dd {
+	font-size: 13px; color: var(--bmkg-text); font-weight: 600; margin: 0;
+}
+.bmkg-quake-icon { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.bmkg-quake-icon--mag   { background: var(--bmkg-danger); }
+.bmkg-quake-icon--depth { background: var(--bmkg-success); }
+.bmkg-quake-icon--loc   { background: var(--bmkg-warning); }
+
+/* AQI */
+.bmkg-aqi { flex: 1; }
+.bmkg-aqi__label {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--bmkg-text-muted);
+	margin-bottom: 6px;
+}
+.bmkg-aqi__value {
+	font-size: 30px;
+	font-weight: 700;
+	color: var(--bmkg-text);
+	margin: 0 0 8px;
+	line-height: 1;
+}
+.bmkg-aqi__value em { font-style: normal; font-size: 15px; color: var(--bmkg-text-muted); font-weight: 500; margin-left: 4px; }
+.bmkg-aqi__status { font-size: 12px; color: var(--bmkg-text-soft); margin: 0 0 10px; line-height: 1.4; }
+.bmkg-aqi__time {
+	display: inline-block;
+	padding: 3px 10px;
+	background: var(--bmkg-bg-soft);
+	border-radius: var(--radius-sm);
+	font-size: 11px;
+	color: var(--bmkg-text-muted);
+	margin: 0;
+	font-family: var(--font-mono);
+}
+
+.bmkg-aqi__face { flex-shrink: 0; color: var(--bmkg-aqi-ok); }
+.bmkg-aqi__face[data-face="good"] { color: var(--bmkg-aqi-good); }
+.bmkg-aqi__face[data-face="ok"]   { color: var(--bmkg-aqi-ok); }
+.bmkg-aqi__face[data-face="warn"] { color: var(--bmkg-aqi-warn); }
+.bmkg-aqi__face[data-face="bad"]  { color: var(--bmkg-aqi-bad); }
+
+/* ==========================================================================
+   TABS (Prakiraan hari)
+   ========================================================================== */
+.bmkg-tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--bmkg-bg-soft); border-radius: var(--radius-full); }
+.bmkg-tab {
+	padding: 8px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bmkg-text-soft);
+	border-radius: var(--radius-full);
+	transition: background .15s ease, color .15s ease;
+}
+.bmkg-tab:hover { color: var(--bmkg-navy); }
+.bmkg-tab.is-active { background: var(--bmkg-white); color: var(--bmkg-navy); box-shadow: var(--shadow-xs); }
+
+/* ==========================================================================
+   SLIDER + FORECAST CARDS
+   ========================================================================== */
+.bmkg-slider { position: relative; }
+
+.bmkg-slider__track {
+	display: flex;
+	gap: 14px;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	scroll-padding-left: var(--container-pad);
+	padding: 4px 4px 12px;
+	scrollbar-width: none;
+}
+.bmkg-slider__track::-webkit-scrollbar { display: none; }
+
+.bmkg-slider__nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 40px; height: 40px;
+	display: inline-flex; align-items: center; justify-content: center;
+	background: var(--bmkg-white);
+	color: var(--bmkg-navy);
+	border: 1px solid var(--bmkg-border);
+	border-radius: 50%;
+	box-shadow: var(--shadow-md);
+	z-index: 2;
+	transition: transform .15s ease, box-shadow .15s ease;
+}
+.bmkg-slider__nav:hover { transform: translateY(-50%) scale(1.05); box-shadow: var(--shadow-lg); }
+.bmkg-slider__nav--prev { left: -18px; }
+.bmkg-slider__nav--next { right: -18px; }
+
+@media (max-width: 640px){
+	.bmkg-slider__nav--prev { left: 4px; }
+	.bmkg-slider__nav--next { right: 4px; }
+}
+
+.bmkg-forecast-card {
+	flex: 0 0 200px;
+	scroll-snap-align: start;
+	background: var(--bmkg-blue-light);
+	border: 1px solid var(--bmkg-border-soft);
+	border-radius: var(--radius-lg);
+	padding: 22px 18px;
+	text-align: center;
+	transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.bmkg-forecast-card:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-md);
+}
+
+.bmkg-forecast-card__name {
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 4px;
+}
+
+.bmkg-forecast-card__time {
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	margin: 0 0 16px;
+	font-family: var(--font-mono);
+}
+
+.bmkg-forecast-card__icon {
+	height: 72px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--bmkg-navy);
+	margin-bottom: 8px;
+}
+
+.bmkg-forecast-card__temp {
+	font-size: 32px;
+	font-weight: 700;
+	color: var(--bmkg-text);
+	margin: 0 0 4px;
+	line-height: 1;
+}
+.bmkg-forecast-card__temp em { font-style: normal; font-size: 18px; font-weight: 500; color: var(--bmkg-text-muted); }
+
+.bmkg-forecast-card__cond {
+	font-size: 13px;
+	color: var(--bmkg-text-soft);
+	margin: 0;
+}
+
+/* ==========================================================================
+   PRODUK GRID
+   ========================================================================== */
+.bmkg-produk-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 18px;
+}
+
+@media (max-width: 960px){ .bmkg-produk-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px){ .bmkg-produk-grid { grid-template-columns: 1fr; } }
+
+.bmkg-produk-card {
+	position: relative;
+	display: block;
+	height: 220px;
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	background: var(--bmkg-bg-soft);
+	border: 1px solid var(--bmkg-border);
+	text-decoration: none;
+	transition: transform .2s ease, box-shadow .2s ease;
+}
+.bmkg-produk-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+.bmkg-produk-card__image {
+	position: absolute; inset: 0;
+	background-size: cover;
+	background-position: center;
+	transition: transform .3s ease;
+}
+.bmkg-produk-card:hover .bmkg-produk-card__image { transform: scale(1.05); }
+
+.bmkg-produk-card__label {
+	position: absolute;
+	left: 0; right: 0; bottom: 0;
+	padding: 14px 16px;
+	background: rgba(15, 36, 71, 0.85);
+	color: var(--bmkg-white);
+}
+.bmkg-produk-card__label span { font-size: 14px; font-weight: 600; }
+
+/* ==========================================================================
+   BERITA & ARTIKEL
+   ========================================================================== */
+.bmkg-news-col { min-width: 0; }
+
+.bmkg-news-col__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding-bottom: 12px;
+	margin-bottom: 14px;
+	border-bottom: 2px solid var(--bmkg-border);
+}
+.bmkg-news-col__head h3 { font-size: 18px; color: var(--bmkg-navy); margin: 0; }
+
+.bmkg-news-col__more {
+	width: 30px; height: 30px;
+	display: inline-flex; align-items: center; justify-content: center;
+	background: var(--bmkg-bg-soft);
+	color: var(--bmkg-navy);
+	border-radius: 50%;
+	transition: background .15s ease;
+}
+.bmkg-news-col__more:hover { background: var(--bmkg-blue-light); }
+
+.bmkg-news-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+
+.bmkg-news-item__link {
+	display: grid;
+	grid-template-columns: 120px 1fr;
+	gap: 14px;
+	padding: 12px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-md);
+	text-decoration: none;
+	color: inherit;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+.bmkg-news-item__link:hover { border-color: var(--bmkg-blue); box-shadow: var(--shadow-sm); }
+
+.bmkg-news-item__thumb {
+	width: 120px; height: 90px;
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+	background: var(--bmkg-bg-soft);
+}
+.bmkg-news-item__thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.bmkg-news-item__date {
+	display: inline-block;
+	font-size: 11px;
+	color: var(--bmkg-text-muted);
+	font-family: var(--font-mono);
+	margin-bottom: 4px;
+}
+
+.bmkg-news-item__title {
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 6px;
+	line-height: 1.35;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.bmkg-news-item__excerpt {
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	margin: 0;
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.bmkg-news-item--empty {
+	padding: 20px;
+	background: var(--bmkg-bg-soft);
+	border-radius: var(--radius-md);
+	color: var(--bmkg-text-muted);
+	text-align: center;
+	font-size: 13px;
+}
+
+/* ==========================================================================
+   PAGE TEMPLATE — Head + Filter (Berita, Buletin, dll)
+   ========================================================================== */
+.bmkg-page { padding: 40px 0 24px; }
+
+.bmkg-page__head {
+	text-align: center;
+	max-width: 720px;
+	margin: 0 auto 32px;
+}
+
+.bmkg-page__title {
+	font-size: 30px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 12px;
+	letter-spacing: -0.02em;
+}
+
+.bmkg-page__subtitle {
+	font-size: 15px;
+	color: var(--bmkg-text-soft);
+	line-height: 1.6;
+	margin: 0;
+}
+
+/* ---- Filter tabs (kategori / tahun) ---- */
+.bmkg-filter {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+	padding: 6px;
+	margin: 0 auto 36px;
+	width: fit-content;
+	max-width: 100%;
+	background: var(--bmkg-bg-soft);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-full);
+}
+
+.bmkg-filter__btn {
+	padding: 9px 22px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--bmkg-text-soft);
+	background: transparent;
+	border-radius: var(--radius-full);
+	transition: background .15s ease, color .15s ease;
+}
+
+.bmkg-filter__btn:hover { color: var(--bmkg-navy); }
+
+.bmkg-filter__btn.is-active {
+	background: var(--bmkg-navy);
+	color: var(--bmkg-white);
+}
+
+/* ==========================================================================
+   CARD GRID (Berita & Artikel)
+   ========================================================================== */
+.bmkg-card-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 24px;
+}
+
+@media (max-width: 900px){ .bmkg-card-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px){ .bmkg-card-grid { grid-template-columns: 1fr; } }
+
+.bmkg-card {
+	display: flex;
+	flex-direction: column;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+	transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.bmkg-card:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--shadow-lg);
+	border-color: var(--bmkg-blue);
+}
+
+.bmkg-card__media {
+	position: relative;
+	display: block;
+	height: 200px;
+	overflow: hidden;
+	background: var(--bmkg-bg-soft);
+}
+
+.bmkg-card__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform .3s ease;
+}
+
+.bmkg-card:hover .bmkg-card__media img { transform: scale(1.04); }
+
+.bmkg-card__badge {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	padding: 4px 12px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: capitalize;
+	color: var(--bmkg-white);
+	background: var(--bmkg-navy);
+	border-radius: var(--radius-full);
+}
+
+.bmkg-card__body {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	padding: 18px;
+}
+
+.bmkg-card__meta {
+	margin-bottom: 10px;
+}
+
+.bmkg-card__meta time {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	font-family: var(--font-mono);
+}
+
+.bmkg-card__title {
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.4;
+	margin: 0 0 10px;
+}
+
+.bmkg-card__title a {
+	color: var(--bmkg-navy);
+	text-decoration: none;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.bmkg-card__title a:hover { color: var(--bmkg-blue); }
+
+.bmkg-card__excerpt {
+	font-size: 13px;
+	color: var(--bmkg-text-muted);
+	line-height: 1.55;
+	margin: 0 0 16px;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.bmkg-card__more {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: auto;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bmkg-blue);
+	text-decoration: none;
+}
+
+.bmkg-card__more:hover { color: var(--bmkg-blue-hover); }
+.bmkg-card__more:hover svg { transform: translateX(2px); }
+.bmkg-card__more svg { transition: transform .15s ease; }
+
+/* ==========================================================================
+   BULLETIN GRID (poster style)
+   ========================================================================== */
+.bmkg-bulletin-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 24px;
+}
+
+@media (max-width: 1000px){ .bmkg-bulletin-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 720px){ .bmkg-bulletin-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 440px){ .bmkg-bulletin-grid { grid-template-columns: 1fr; } }
+
+.bmkg-bulletin-card {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+	transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.bmkg-bulletin-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-lg);
+	border-color: var(--bmkg-blue);
+}
+
+.bmkg-bulletin-card__poster {
+	position: relative;
+	display: block;
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
+	background: var(--bmkg-bg-soft);
+}
+
+.bmkg-bulletin-card__poster img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform .35s ease;
+}
+
+.bmkg-bulletin-card:hover .bmkg-bulletin-card__poster img { transform: scale(1.05); }
+
+.bmkg-bulletin-card__month {
+	position: absolute;
+	top: 12px;
+	left: 12px;
+	padding: 5px 12px;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--bmkg-navy);
+	background: rgba(255,255,255,0.94);
+	border-radius: var(--radius-full);
+}
+
+.bmkg-bulletin-card__tag {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	padding: 5px 12px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--bmkg-white);
+	background: var(--bmkg-success);
+	border-radius: var(--radius-full);
+}
+
+.bmkg-bulletin-card__body {
+	padding: 16px;
+	text-align: center;
+}
+
+.bmkg-bulletin-card__title {
+	font-size: 15px;
+	font-weight: 700;
+	line-height: 1.4;
+	margin: 0 0 8px;
+}
+
+.bmkg-bulletin-card__title a {
+	color: var(--bmkg-navy);
+	text-decoration: none;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.bmkg-bulletin-card__title a:hover { color: var(--bmkg-blue); }
+
+.bmkg-bulletin-card__date {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	font-family: var(--font-mono);
+	margin: 0;
+}
+
+/* ==========================================================================
+   EMPTY STATE + PAGINATION
+   ========================================================================== */
+.bmkg-empty {
+	grid-column: 1 / -1;
+	text-align: center;
+	padding: 48px 20px;
+	color: var(--bmkg-text-muted);
+	font-size: 15px;
+}
+.bmkg-empty.is-hidden { display: none; }
+
+.bmkg-pagination {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 48px 0 8px;
+}
+
+.bmkg-pagination .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	height: 40px;
+	padding: 0 12px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--bmkg-text);
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-sm);
+	text-decoration: none;
+	transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.bmkg-pagination a.page-numbers:hover {
+	background: var(--bmkg-bg-soft);
+	border-color: var(--bmkg-blue);
+	color: var(--bmkg-navy);
+}
+
+.bmkg-pagination .page-numbers.current {
+	background: var(--bmkg-navy);
+	border-color: var(--bmkg-navy);
+	color: var(--bmkg-white);
+}
+
+.bmkg-pagination .page-numbers.dots {
+	border-color: transparent;
+	background: transparent;
+}
+
+/* ==========================================================================
+   PROFILE PAGE (Profil Stasiun & Profil BMKG)
+   ========================================================================== */
+.bmkg-section__title--center { text-align: center; }
+
+/* ---- Profil Stasiun: card utama ---- */
+.bmkg-profile {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+	margin-bottom: 40px;
+}
+
+.bmkg-profile__header {
+	background: var(--bmkg-navy);
+	color: var(--bmkg-white);
+	padding: 32px;
+	text-align: center;
+}
+
+.bmkg-profile__header h2 {
+	color: var(--bmkg-white);
+	font-size: 22px;
+	margin: 0 0 8px;
+}
+
+.bmkg-profile__header p {
+	font-size: 14px;
+	color: rgba(255,255,255,0.82);
+	margin: 0;
+}
+
+.bmkg-profile__content {
+	display: grid;
+	grid-template-columns: 1.1fr 1fr;
+	gap: 40px;
+	padding: 36px;
+}
+
+@media (max-width: 768px){
+	.bmkg-profile__content { grid-template-columns: 1fr; gap: 28px; padding: 24px; }
+}
+
+.bmkg-profile__list { margin: 0; }
+
+.bmkg-profile__item {
+	padding: 14px 0;
+	border-bottom: 1px solid var(--bmkg-border-soft);
+}
+.bmkg-profile__item:last-child { border-bottom: 0; }
+
+.bmkg-profile__item dt {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--bmkg-text-muted);
+	margin-bottom: 4px;
+}
+
+.bmkg-profile__item dd {
+	font-size: 14px;
+	color: var(--bmkg-text);
+	margin: 0;
+	line-height: 1.55;
+}
+
+.bmkg-profile__figure { margin: 0; }
+.bmkg-profile__figure img {
+	width: 100%;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--bmkg-border);
+}
+.bmkg-profile__figure figcaption {
+	margin-top: 10px;
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	text-align: center;
+}
+
+/* ---- Kontak block ---- */
+.bmkg-contact-block {
+	background: var(--bmkg-navy);
+	border-radius: var(--radius-lg);
+	padding: 40px 32px;
+	margin-bottom: 40px;
+	text-align: center;
+}
+
+.bmkg-contact-block__title {
+	color: var(--bmkg-white);
+	font-size: 22px;
+	margin: 0 0 28px;
+}
+
+.bmkg-contact-block__grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 28px;
+}
+
+@media (max-width: 700px){ .bmkg-contact-block__grid { grid-template-columns: 1fr; gap: 24px; } }
+
+.bmkg-contact-block__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px;
+	height: 52px;
+	margin-bottom: 14px;
+	background: rgba(255,255,255,0.12);
+	color: var(--bmkg-white);
+	border-radius: 50%;
+}
+
+.bmkg-contact-block__item h3 {
+	color: var(--bmkg-white);
+	font-size: 15px;
+	margin: 0 0 6px;
+}
+
+.bmkg-contact-block__item p {
+	color: rgba(255,255,255,0.82);
+	font-size: 13px;
+	margin: 0;
+	line-height: 1.6;
+}
+
+/* ---- Galeri ---- */
+.bmkg-gallery { margin-bottom: 24px; }
+.bmkg-gallery__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 20px;
+}
+
+.bmkg-gallery__item {
+	margin: 0;
+	border-radius: var(--radius-md);
+	overflow: hidden;
+	border: 1px solid var(--bmkg-border);
+	box-shadow: var(--shadow-xs);
+}
+
+.bmkg-gallery__item img {
+	width: 100%;
+	height: 220px;
+	object-fit: cover;
+	transition: transform .3s ease;
+}
+
+.bmkg-gallery__item:hover img { transform: scale(1.05); }
+
+/* ---- Profil BMKG: hero logo + gambar ---- */
+.bmkg-profile-hero {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+.bmkg-profile-hero__logo {
+	height: 120px;
+	width: auto;
+	margin: 0 auto 28px;
+}
+
+.bmkg-profile-hero__image {
+	width: 100%;
+	max-width: 820px;
+	border-radius: var(--radius-lg);
+	border: 1px solid var(--bmkg-border);
+	box-shadow: var(--shadow-md);
+	margin: 0 auto;
+}
+
+/* ---- Prose card (Tentang / Tugas / Fungsi / Visi-Misi / Sejarah) ---- */
+.bmkg-prose-card {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-sm);
+	padding: 36px;
+	margin-bottom: 24px;
+}
+
+.bmkg-prose-card > h2 {
+	font-size: 20px;
+	color: var(--bmkg-navy);
+	margin: 0 0 18px;
+	padding-bottom: 14px;
+	border-bottom: 2px solid var(--bmkg-border);
+}
+
+@media (max-width: 640px){ .bmkg-prose-card { padding: 24px; } }
+
+.bmkg-profile-duo { margin-bottom: 24px; }
+.bmkg-profile-duo .bmkg-prose-card { margin-bottom: 0; height: 100%; }
+
+.bmkg-prose {
+	font-size: 15px;
+	line-height: 1.75;
+	color: var(--bmkg-text-soft);
+}
+
+.bmkg-prose p { margin: 0 0 16px; }
+.bmkg-prose p:last-child { margin-bottom: 0; }
+
+/* ---- Check list (Fungsi) ---- */
+.bmkg-check-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.bmkg-check-list li {
+	position: relative;
+	padding-left: 30px;
+	margin-bottom: 14px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--bmkg-text-soft);
+}
+
+.bmkg-check-list li:last-child { margin-bottom: 0; }
+
+.bmkg-check-list li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 3px;
+	width: 18px;
+	height: 18px;
+	background: var(--bmkg-success);
+	border-radius: 50%;
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center / 12px no-repeat;
+	-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center / 12px no-repeat;
+}
+
+/* ---- Ordered list (Misi) ---- */
+.bmkg-ordered-list {
+	margin: 0;
+	padding-left: 20px;
+	counter-reset: item;
+	list-style: none;
+}
+
+.bmkg-ordered-list li {
+	position: relative;
+	padding-left: 12px;
+	margin-bottom: 14px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--bmkg-text-soft);
+	counter-increment: item;
+}
+
+.bmkg-ordered-list li:last-child { margin-bottom: 0; }
+
+.bmkg-ordered-list li::before {
+	content: counter(item) ".";
+	position: absolute;
+	left: -20px;
+	font-weight: 700;
+	color: var(--bmkg-blue);
+}
+
+/* ---- Visi & Misi sub-block ---- */
+.bmkg-vismis { margin-bottom: 24px; }
+.bmkg-vismis:last-child { margin-bottom: 0; }
+
+.bmkg-vismis__label {
+	display: inline-block;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 12px;
+	padding: 4px 16px;
+	background: var(--bmkg-blue-light);
+	border-radius: var(--radius-full);
+}
+
+/* ---- Lightbox / enlargeable ---- */
+.bmkg-enlargeable { cursor: zoom-in; }
+
+.bmkg-lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 40px;
+	background: rgba(15, 36, 71, 0.9);
+}
+
+.bmkg-lightbox.is-open { display: flex; }
+
+.bmkg-lightbox img {
+	max-width: 92vw;
+	max-height: 88vh;
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+}
+
+.bmkg-lightbox__close {
+	position: absolute;
+	top: 24px;
+	right: 32px;
+	width: 44px;
+	height: 44px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--bmkg-white);
+	background: rgba(255,255,255,0.12);
+	border-radius: 50%;
+	font-size: 24px;
+	line-height: 1;
+}
+
+.bmkg-lightbox__close:hover { background: rgba(255,255,255,0.22); }
+
+/* ==========================================================================
+   DAFTAR PEGAWAI — Slider (auto-slide + draggable)
+   ========================================================================== */
+.bmkg-staff {
+	position: relative;
+	padding: 8px 0 40px;
+	outline: none;
+}
+
+.bmkg-staff__viewport {
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
+	cursor: grab;
+	scroll-snap-type: x mandatory;
+}
+.bmkg-staff__viewport::-webkit-scrollbar { display: none; }
+.bmkg-staff__viewport.is-grabbing { cursor: grabbing; }
+
+.bmkg-staff__track {
+	display: flex;
+	gap: 22px;
+	padding: 6px 4px;
+}
+
+.bmkg-staff-card {
+	flex: 0 0 calc((100% - 22px * 3) / 4);
+	scroll-snap-align: start;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+	transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+	user-select: none;
+}
+
+.bmkg-staff-card:hover {
+	transform: translateY(-4px);
+	box-shadow: var(--shadow-lg);
+	border-color: var(--bmkg-blue);
+}
+
+.bmkg-staff-card__photo {
+	position: relative;
+	aspect-ratio: 3 / 4;
+	background: var(--bmkg-bg-soft);
+	overflow: hidden;
+}
+
+.bmkg-staff-card__photo img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform .35s ease;
+	-webkit-user-drag: none;
+}
+.bmkg-staff-card:hover .bmkg-staff-card__photo img { transform: scale(1.05); }
+
+.bmkg-staff-card__placeholder {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--bmkg-border);
+}
+
+.bmkg-staff-card__body {
+	padding: 18px 16px 20px;
+	text-align: center;
+}
+
+.bmkg-staff-card__name {
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 4px;
+	line-height: 1.3;
+}
+
+.bmkg-staff-card__role {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bmkg-blue);
+	margin: 0 0 6px;
+}
+
+.bmkg-staff-card__nip {
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	margin: 0;
+	font-family: var(--font-mono);
+}
+
+/* ---- Nav buttons ---- */
+.bmkg-staff__nav {
+	position: absolute;
+	top: calc(50% - 20px);
+	transform: translateY(-50%);
+	width: 42px;
+	height: 42px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--bmkg-white);
+	color: var(--bmkg-navy);
+	border: 1px solid var(--bmkg-border);
+	border-radius: 50%;
+	box-shadow: var(--shadow-md);
+	z-index: 3;
+	transition: transform .15s ease, box-shadow .15s ease;
+}
+.bmkg-staff__nav:hover { transform: translateY(-50%) scale(1.06); box-shadow: var(--shadow-lg); }
+.bmkg-staff__nav--prev { left: -18px; }
+.bmkg-staff__nav--next { right: -18px; }
+
+@media (max-width: 640px){
+	.bmkg-staff__nav--prev { left: 2px; }
+	.bmkg-staff__nav--next { right: 2px; }
+}
+
+/* ---- Dots ---- */
+.bmkg-staff__dots {
+	display: flex;
+	justify-content: center;
+	gap: 8px;
+	margin-top: 24px;
+}
+
+.bmkg-staff__dot {
+	width: 9px;
+	height: 9px;
+	padding: 0;
+	border-radius: 50%;
+	background: var(--bmkg-border);
+	transition: background .15s ease, transform .15s ease, width .15s ease;
+}
+.bmkg-staff__dot:hover { background: var(--bmkg-navy-soft); }
+.bmkg-staff__dot.is-active {
+	background: var(--bmkg-navy);
+	width: 24px;
+	border-radius: var(--radius-full);
+}
+
+/* ---- Responsive card widths ---- */
+@media (max-width: 1199px){
+	.bmkg-staff-card { flex-basis: calc((100% - 22px * 2) / 3); }
+}
+@media (max-width: 899px){
+	.bmkg-staff-card { flex-basis: calc((100% - 22px) / 2); }
+}
+@media (max-width: 559px){
+	.bmkg-staff-card { flex-basis: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce){
+	.bmkg-staff-card__photo img { transition: none; }
+}
+
+/* ==========================================================================
+   BACK TO TOP + SPINNER (dipakai main.js)
+   ========================================================================== */
+.bmkg-back-to-top {
+	position: fixed;
+	bottom: 28px;
+	right: 28px;
+	z-index: 90;
+	width: 46px;
+	height: 46px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--bmkg-white);
+	background: var(--bmkg-navy);
+	border-radius: 50%;
+	box-shadow: var(--shadow-lg);
+	opacity: 0;
+	transform: translateY(20px);
+	pointer-events: none;
+	transition: opacity .2s ease, transform .2s ease, background .15s ease;
+}
+
+.bmkg-back-to-top.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.bmkg-back-to-top:hover { background: var(--bmkg-navy-dark); }
+
+.bmkg-spinner {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	border: 2px solid currentColor;
+	border-top-color: transparent;
+	border-radius: 50%;
+	animation: bmkg-spin 0.8s linear infinite;
+	vertical-align: -2px;
+	margin-right: 4px;
+}
+
+@keyframes bmkg-spin {
+	to { transform: rotate(360deg); }
+}
+
+/* Tombol load-more (opsional) */
+.bmkg-load-more {
+	display: block;
+	margin: 32px auto 0;
+	padding: 12px 28px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--bmkg-navy);
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-full);
+	transition: background .15s ease, border-color .15s ease;
+}
+
+.bmkg-load-more:hover:not(:disabled) {
+	background: var(--bmkg-bg-soft);
+	border-color: var(--bmkg-blue);
+}
+
+.bmkg-load-more:disabled { opacity: 0.6; cursor: default; }
+
+@media (prefers-reduced-motion: reduce){
+	.bmkg-back-to-top { transition: opacity .2s ease; transform: none; }
+}
+
+/* ==========================================================================
+   BREADCRUMB
+   ========================================================================== */
+.bmkg-breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 24px;
+	font-size: 13px;
+	color: var(--bmkg-text-muted);
+}
+.bmkg-breadcrumb a { color: var(--bmkg-navy); text-decoration: none; }
+.bmkg-breadcrumb a:hover { color: var(--bmkg-blue); text-decoration: underline; }
+.bmkg-breadcrumb span[aria-hidden] { color: var(--bmkg-border); }
+.bmkg-breadcrumb__current { color: var(--bmkg-text-muted); }
+
+/* ==========================================================================
+   SINGLE ARTICLE
+   ========================================================================== */
+.bmkg-single__container { max-width: 900px; }
+
+.bmkg-article {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+}
+
+.bmkg-article__hero {
+	margin: 0;
+	height: 420px;
+	overflow: hidden;
+	background: var(--bmkg-bg-soft);
+}
+.bmkg-article__hero img { width: 100%; height: 100%; object-fit: cover; }
+
+.bmkg-article__inner { padding: 36px 44px 44px; }
+
+@media (max-width: 640px){
+	.bmkg-article__hero { height: 240px; }
+	.bmkg-article__inner { padding: 24px 20px 32px; }
+}
+
+.bmkg-article__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 20px;
+	margin-bottom: 16px;
+	font-size: 13px;
+	color: var(--bmkg-text-muted);
+}
+.bmkg-article__meta span { display: inline-flex; align-items: center; gap: 6px; }
+.bmkg-article__meta span svg { color: var(--bmkg-blue); }
+.bmkg-article__meta a { color: var(--bmkg-text-muted); text-decoration: none; }
+.bmkg-article__meta a:hover { color: var(--bmkg-blue); }
+
+.bmkg-article__title {
+	font-size: 28px;
+	line-height: 1.3;
+	color: var(--bmkg-navy);
+	margin: 0 0 24px;
+}
+
+@media (max-width: 640px){ .bmkg-article__title { font-size: 22px; } }
+
+.bmkg-article__content { margin-bottom: 8px; }
+.bmkg-article__content img { border-radius: var(--radius-md); height: auto; }
+.bmkg-article__content h2,
+.bmkg-article__content h3 { color: var(--bmkg-navy); margin: 28px 0 12px; }
+.bmkg-article__content a { color: var(--bmkg-blue); text-decoration: underline; }
+.bmkg-article__content ul,
+.bmkg-article__content ol { padding-left: 22px; margin: 0 0 16px; }
+.bmkg-article__content li { margin-bottom: 6px; }
+.bmkg-article__content blockquote {
+	margin: 20px 0;
+	padding: 12px 20px;
+	border-left: 3px solid var(--bmkg-blue);
+	background: var(--bmkg-bg-soft);
+	color: var(--bmkg-text-soft);
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.bmkg-page-links { margin-top: 20px; font-size: 14px; }
+
+/* ---- Share ---- */
+.bmkg-share {
+	margin-top: 40px;
+	padding-top: 28px;
+	border-top: 1px solid var(--bmkg-border);
+	text-align: center;
+}
+.bmkg-share__title { font-size: 15px; color: var(--bmkg-navy); margin: 0 0 16px; }
+.bmkg-share__links { display: flex; justify-content: center; gap: 12px; }
+.bmkg-share__btn {
+	width: 44px; height: 44px;
+	display: inline-flex; align-items: center; justify-content: center;
+	border-radius: 50%;
+	color: var(--bmkg-white);
+	transition: transform .15s ease, opacity .15s ease;
+}
+.bmkg-share__btn:hover { transform: translateY(-2px); color: var(--bmkg-white); }
+.bmkg-share__btn--fb   { background: #1877f2; }
+.bmkg-share__btn--x    { background: #000000; }
+.bmkg-share__btn--wa   { background: #25d366; }
+.bmkg-share__btn--mail { background: var(--bmkg-text-soft); }
+
+/* ---- Post nav ---- */
+.bmkg-post-nav {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: 32px;
+	padding-top: 24px;
+	border-top: 1px solid var(--bmkg-border);
+}
+.bmkg-post-nav a {
+	display: inline-block;
+	padding: 10px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bmkg-navy);
+	background: var(--bmkg-bg-soft);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-sm);
+	text-decoration: none;
+	transition: background .15s ease, border-color .15s ease;
+}
+.bmkg-post-nav a:hover { background: var(--bmkg-blue-light); border-color: var(--bmkg-blue); }
+.bmkg-post-nav__next { margin-left: auto; text-align: right; }
+
+/* ---- Related ---- */
+.bmkg-related { margin-top: 56px; }
+
+/* ==========================================================================
+   ARCHIVE CONTROLS (filter + sort)
+   ========================================================================== */
+.bmkg-archive-controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-bottom: 36px;
+}
+.bmkg-archive-controls .bmkg-filter { margin: 0; }
+
+.bmkg-sort {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	color: var(--bmkg-text-soft);
+}
+.bmkg-sort select {
+	padding: 9px 14px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bmkg-navy);
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-full);
+	cursor: pointer;
+}
+.bmkg-sort select:focus { outline: none; border-color: var(--bmkg-blue); }
+
+/* ==========================================================================
+   EMPTY STATE (arsip kosong)
+   ========================================================================== */
+.bmkg-empty-state {
+	text-align: center;
+	padding: 64px 20px;
+	color: var(--bmkg-text-muted);
+}
+.bmkg-empty-state svg { color: var(--bmkg-border); margin-bottom: 16px; }
+.bmkg-empty-state h2 { color: var(--bmkg-navy); font-size: 20px; margin: 0 0 8px; }
+.bmkg-empty-state p { margin: 0; font-size: 14px; }
+
+/* ==========================================================================
+   LAYANAN DATA
+   ========================================================================== */
+.bmkg-data-figure { margin: 0; text-align: center; }
+.bmkg-data-figure img {
+	width: 100%;
+	max-width: 860px;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--bmkg-border);
+	box-shadow: var(--shadow-xs);
+}
+
+.bmkg-tabpanel { display: none; }
+.bmkg-tabpanel.is-active { display: block; }
+
+/* Note box (info gratis / pnbp) */
+.bmkg-note {
+	margin-top: 24px;
+	padding: 20px 24px;
+	border-radius: var(--radius-md);
+	border: 1px solid;
+}
+.bmkg-note h3 { font-size: 15px; margin: 0 0 12px; }
+.bmkg-note p { margin: 0 0 12px; font-size: 14px; color: var(--bmkg-text-soft); line-height: 1.6; }
+.bmkg-note--success {
+	background: #f0fdf4;
+	border-color: #bbf7d0;
+}
+.bmkg-note--success h3 { color: var(--bmkg-success); }
+.bmkg-note--warning {
+	background: var(--bmkg-warning-bg);
+	border-color: var(--bmkg-warning-line);
+}
+.bmkg-note--warning h3 { color: #b45309; }
+
+/* Jenis data grid */
+.bmkg-data-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 18px;
+}
+@media (max-width: 820px){ .bmkg-data-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px){ .bmkg-data-grid { grid-template-columns: 1fr; } }
+
+.bmkg-data-item {
+	padding: 20px;
+	background: var(--bmkg-bg-soft);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-md);
+	text-align: center;
+}
+.bmkg-data-item h3 { font-size: 15px; color: var(--bmkg-navy); margin: 0 0 6px; }
+.bmkg-data-item p { font-size: 13px; color: var(--bmkg-text-muted); margin: 0; line-height: 1.5; }
+
+/* CTA di kontak block */
+.bmkg-contact-block__cta {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin-top: 28px;
+	padding: 13px 28px;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	background: var(--bmkg-white);
+	border-radius: var(--radius-full);
+	text-decoration: none;
+	transition: transform .15s ease, box-shadow .15s ease;
+}
+.bmkg-contact-block__cta:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--shadow-md);
+	color: var(--bmkg-navy);
+}
+
+/* ==========================================================================
+   FOOTER (BMKG Pusat / Kalteng style)
+   ========================================================================== */
+.bmkg-footer {
+	background: var(--bmkg-navy-dark);
+	color: rgba(255,255,255,0.82);
+	padding: 52px 0 0;
+	margin-top: 48px;
+}
+
+.bmkg-footer__grid {
+	display: grid;
+	grid-template-columns: 1.6fr 1.2fr 1fr 1fr;
+	gap: 36px;
+	padding-bottom: 36px;
+}
+
+@media (max-width: 960px){ .bmkg-footer__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px){ .bmkg-footer__grid { grid-template-columns: 1fr; } }
+
+.bmkg-footer h4 {
+	color: var(--bmkg-white);
+	font-size: 13px;
+	font-weight: 700;
+	margin: 0 0 16px;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.bmkg-footer p, .bmkg-footer li { font-size: 13px; line-height: 1.6; }
+.bmkg-footer p { margin: 0 0 10px; }
+
+.bmkg-footer ul { list-style: none; padding: 0; margin: 0; }
+.bmkg-footer ul li { margin-bottom: 8px; }
+.bmkg-footer ul a {
+	color: rgba(255,255,255,0.72);
+	text-decoration: none;
+	transition: color .15s ease;
+}
+.bmkg-footer ul a:hover { color: var(--bmkg-white); }
+
+/* Brand column */
+.bmkg-footer__brand-row {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	margin-bottom: 18px;
+}
+.bmkg-footer__brand-row img {
+	width: 56px; height: 56px;
+	border-radius: 50%;
+	background: rgba(255,255,255,0.12);
+	padding: 4px;
+	object-fit: contain;
+}
+.bmkg-footer__brand-row strong {
+	color: var(--bmkg-white);
+	font-size: 20px;
+	display: block;
+	letter-spacing: 0.02em;
+}
+
+.bmkg-footer__station-name {
+	font-size: 16px !important;
+	font-weight: 700;
+	color: var(--bmkg-white);
+	margin: 0 0 10px;
+	line-height: 1.3;
+}
+
+.bmkg-footer__desc {
+	font-size: 13px;
+	color: rgba(255,255,255,0.65);
+	line-height: 1.6;
+}
+
+/* Contact column */
+.bmkg-footer__contact { margin: 0; padding: 0; list-style: none; }
+.bmkg-footer__contact li {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin-bottom: 14px;
+	font-size: 13px;
+	line-height: 1.5;
+}
+.bmkg-footer__contact li svg {
+	flex-shrink: 0;
+	margin-top: 2px;
+	color: rgba(255,255,255,0.5);
+}
+.bmkg-footer__contact li a {
+	color: rgba(255,255,255,0.72);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.bmkg-footer__contact li a:hover { color: var(--bmkg-white); }
+
+/* Links column */
+.bmkg-footer__links { margin: 0; padding: 0; list-style: none; }
+.bmkg-footer__links li { margin-bottom: 10px; }
+.bmkg-footer__links a {
+	font-size: 13px;
+	color: rgba(255,255,255,0.72);
+}
+
+/* Apps badges */
+.bmkg-footer__apps {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin-bottom: 24px;
+}
+
+.bmkg-footer__app-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 18px;
+	background: rgba(255,255,255,0.1);
+	color: var(--bmkg-white);
+	border: 1px solid rgba(255,255,255,0.2);
+	border-radius: var(--radius-md);
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background .15s ease;
+}
+
+.bmkg-footer__app-badge:hover {
+	background: rgba(255,255,255,0.18);
+	color: var(--bmkg-white);
+}
+
+/* Social icons */
+.bmkg-footer__social { display: flex; gap: 10px; flex-wrap: wrap; }
+.bmkg-footer__social a {
+	width: 38px; height: 38px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(255,255,255,0.1);
+	color: var(--bmkg-white);
+	border-radius: 50%;
+	transition: background .15s ease;
+	text-decoration: none;
+}
+.bmkg-footer__social a:hover { background: var(--bmkg-blue); color: var(--bmkg-white); }
+
+/* Bottom copyright bar */
+.bmkg-footer__bottom {
+	border-top: 1px solid rgba(255,255,255,0.12);
+	padding: 20px 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.bmkg-footer__bottom p {
+	font-size: 12px;
+	color: rgba(255,255,255,0.5);
+	margin: 0;
+}
+
+.bmkg-footer__bottom-links {
+	display: flex;
+	gap: 16px;
+}
+
+.bmkg-footer__bottom-links a {
+	font-size: 12px;
+	color: rgba(255,255,255,0.5);
+	text-decoration: none;
+	transition: color .15s ease;
+}
+
+.bmkg-footer__bottom-links a:hover { color: var(--bmkg-white); }
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 768px){
+	.bmkg-container { padding-left: 16px; padding-right: 16px; }
+	.bmkg-section { padding: 24px 0; }
+	.bmkg-section__title { font-size: 18px; }
+	.bmkg-map { height: 360px; }
+	.bmkg-news-item__link { grid-template-columns: 90px 1fr; }
+	.bmkg-news-item__thumb { width: 90px; height: 68px; }
+	.bmkg-info-card__body--aqi .bmkg-aqi__face svg { width: 80px; height: 80px; }
+	.bmkg-info-card__body--aqi .bmkg-aqi__value { font-size: 24px; }
+	.bmkg-warning-meta { grid-template-columns: 1fr; }
+	.bmkg-warning-card__areas ul { grid-template-columns: 1fr; }
+	.bmkg-header__time { display: none; }
+}
+
+@media (max-width: 480px){
+	.bmkg-forecast-card { flex: 0 0 170px; padding: 18px 14px; }
+	.bmkg-news-item__link { grid-template-columns: 1fr; }
+	.bmkg-news-item__thumb { width: 100%; height: 140px; }
+	.bmkg-search-hero__row { flex-direction: column; }
+	.bmkg-search, .bmkg-weather-pill { width: 100%; }
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce){
+	* { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+	html { scroll-behavior: auto; }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY - Focus visible
+   ========================================================================== */
+:focus-visible {
+	outline: 2px solid var(--bmkg-blue);
+	outline-offset: 2px;
+	border-radius: var(--radius-sm);
+}
+
+.bmkg-search:focus-within :focus-visible { outline: none; }
+
+/* ==========================================================================
+   V2.1 — REDESAIN FRONT PAGE (identitas Betoambari, bukan replika Kalteng)
+   ========================================================================== */
+
+.bmkg-section--first { padding-top: 28px; }
+
+/* ---- Section "Lihat Semua" link ---- */
+.bmkg-section__more {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--bmkg-blue);
+	text-decoration: none;
+}
+.bmkg-section__more:hover { color: var(--bmkg-blue-hover); }
+
+/* ---- Banner Peringatan Dini (full width, garis kiri tebal) ---- */
+.bmkg-alertbar {
+	position: relative;
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+	padding: 20px 24px;
+	background: #fff7ed;
+	border: 1px solid #fed7aa;
+	border-left: 5px solid #f97316;
+	border-radius: var(--radius-md);
+}
+
+.bmkg-alertbar--nil {
+	background: #f0fdf4;
+	border-color: #bbf7d0;
+	border-left-color: var(--bmkg-success);
+}
+
+.bmkg-alertbar__icon { flex-shrink: 0; color: #ea580c; margin-top: 2px; }
+.bmkg-alertbar--nil .bmkg-alertbar__icon { color: var(--bmkg-success); }
+
+.bmkg-alertbar__body { flex: 1; min-width: 0; }
+
+.bmkg-alertbar__title {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 6px;
+}
+
+.bmkg-alertbar__text { font-size: 14px; color: var(--bmkg-text-soft); margin: 0 0 4px; line-height: 1.55; }
+.bmkg-alertbar__text strong { color: #c2410c; }
+.bmkg-alertbar--nil .bmkg-alertbar__text { margin: 0; }
+
+.bmkg-alertbar__areas { font-size: 13px; color: var(--bmkg-text-muted); margin: 0; line-height: 1.55; }
+.bmkg-alertbar__areas em { font-style: normal; color: var(--bmkg-text-soft); }
+
+.bmkg-alertbar__item { display: none; }
+.bmkg-alertbar__item.is-active { display: block; }
+
+.bmkg-alertbar__nav {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	font-family: var(--font-mono);
+}
+.bmkg-alertbar__nav button {
+	width: 30px; height: 30px;
+	display: inline-flex; align-items: center; justify-content: center;
+	font-size: 18px;
+	color: var(--bmkg-navy);
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: 50%;
+	transition: background .15s ease;
+}
+.bmkg-alertbar__nav button:hover { background: var(--bmkg-bg-soft); }
+
+/* ---- Map head: search + kondisi terkini ---- */
+.bmkg-map-card__head--tools {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-wrap: wrap;
+}
+
+.bmkg-mapsearch {
+	flex: 1 1 260px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 9px 16px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-full);
+}
+.bmkg-mapsearch:focus-within { border-color: var(--bmkg-blue); }
+.bmkg-mapsearch svg { color: var(--bmkg-text-muted); flex-shrink: 0; }
+.bmkg-mapsearch input { flex: 1; border: 0; outline: 0; background: transparent; font-size: 13px; color: var(--bmkg-text); }
+
+.bmkg-mapnow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 7px 16px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-full);
+	font-size: 13px;
+}
+.bmkg-mapnow img { width: 30px; height: 30px; }
+.bmkg-mapnow strong { color: var(--bmkg-navy); font-size: 15px; }
+.bmkg-mapnow em { font-style: normal; color: var(--bmkg-text-muted); font-size: 12px; }
+
+/* ---- Marker peta: lebih kecil, icon SVG halus ---- */
+.bmkg-marker {
+	width: 46px !important;
+	height: 46px !important;
+	flex-direction: column;
+	gap: 0;
+	background: rgba(255,255,255,0.95);
+	border-width: 2px;
+	box-shadow: 0 2px 8px rgba(15,36,71,0.14);
+}
+.bmkg-marker img { width: 26px; height: 26px; margin-top: 1px; }
+.bmkg-marker .bmkg-marker__temp { font-size: 10px; margin-top: -2px; }
+
+/* ---- Kartu prakiraan: putih + strip aksen atas (bukan biru muda) ---- */
+.bmkg-forecast-card {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-top: 3px solid var(--bmkg-blue);
+	flex: 0 0 185px;
+	padding: 18px 14px;
+}
+.bmkg-forecast-card__icon { height: 56px; margin-bottom: 6px; }
+.bmkg-forecast-card__icon img { width: 52px; height: 52px; }
+.bmkg-forecast-card__temp { font-size: 28px; }
+
+/* ---- Info card: kepala putih + aksen warna (bukan navy solid ala Kalteng) ---- */
+.bmkg-info-card { border-top: 3px solid var(--bmkg-navy); }
+.bmkg-info-card--accent-red   { border-top-color: var(--bmkg-danger); }
+.bmkg-info-card--accent-blue  { border-top-color: var(--bmkg-blue); }
+.bmkg-info-card--accent-green { border-top-color: var(--bmkg-success); }
+
+.bmkg-info-card__head {
+	background: var(--bmkg-white);
+	color: var(--bmkg-navy);
+	border-bottom: 1px solid var(--bmkg-border);
+}
+.bmkg-info-card__head h2 { color: var(--bmkg-navy); }
+.bmkg-info-card__more {
+	background: var(--bmkg-bg-soft);
+	color: var(--bmkg-navy);
+}
+.bmkg-info-card__more:hover { background: var(--bmkg-blue-light); color: var(--bmkg-navy); }
+
+/* ---- Produk: icon card (tanpa gambar) ---- */
+.bmkg-produk-grid {
+	grid-template-columns: repeat(4, minmax(0,1fr));
+}
+.bmkg-produk-item {
+	display: block;
+	padding: 26px 22px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	text-decoration: none;
+	box-shadow: var(--shadow-xs);
+	transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.bmkg-produk-item:hover {
+	transform: translateY(-3px);
+	box-shadow: var(--shadow-md);
+	border-color: var(--bmkg-blue);
+}
+.bmkg-produk-item__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 52px; height: 52px;
+	margin-bottom: 14px;
+	color: var(--bmkg-blue);
+	background: var(--bmkg-blue-light);
+	border-radius: var(--radius-md);
+}
+.bmkg-produk-item h3 { font-size: 15px; color: var(--bmkg-navy); margin: 0 0 6px; }
+.bmkg-produk-item p { font-size: 12.5px; color: var(--bmkg-text-muted); margin: 0; line-height: 1.5; }
+
+@media (max-width: 960px){ .bmkg-produk-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 480px){ .bmkg-produk-grid { grid-template-columns: 1fr; } }
+
+/* ---- Kartu slide berita & buletin di front page ---- */
+.bmkg-card--slide { flex: 0 0 290px; scroll-snap-align: start; }
+.bmkg-bulletin-card--slide { flex: 0 0 210px; scroll-snap-align: start; }
+
+.bmkg-slider__track { cursor: grab; }
+.bmkg-slider__track.is-grabbing { cursor: grabbing; }
+.bmkg-slider__track img { -webkit-user-drag: none; user-select: none; }
+
+/* ---- Placeholder media (pengganti gambar dummy) ---- */
+.bmkg-media-empty {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--bmkg-border);
+	background:
+		repeating-linear-gradient(45deg, var(--bmkg-bg-soft) 0 12px, var(--bmkg-white) 12px 24px);
+}
+.bmkg-card__media, .bmkg-bulletin-card__poster { position: relative; }
+
+/* ---- 404 ---- */
+.bmkg-empty-state--404 { padding: 90px 20px; }
+.bmkg-btn-primary {
+	display: inline-block;
+	margin-top: 18px;
+	padding: 12px 28px;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--bmkg-white);
+	background: var(--bmkg-navy);
+	border-radius: var(--radius-full);
+	text-decoration: none;
+	transition: background .15s ease;
+}
+.bmkg-btn-primary:hover { background: var(--bmkg-navy-dark); color: var(--bmkg-white); }
+
+/* ==========================================================================
+   V2.2 — KARTU GEMPA RAPI + SHAKEMAP
+   ========================================================================== */
+.bmkg-quake-time {
+	font-size: 12px;
+	color: var(--bmkg-text-muted);
+	font-family: var(--font-mono);
+	margin: 0 0 6px;
+}
+
+.bmkg-quake-wilayah {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	line-height: 1.4;
+	margin: 0 0 16px;
+}
+
+.bmkg-quake-stats {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 10px;
+	margin-bottom: 14px;
+}
+
+.bmkg-quake-stat {
+	padding: 12px 8px;
+	background: var(--bmkg-bg-soft);
+	border: 1px solid var(--bmkg-border-soft);
+	border-radius: var(--radius-md);
+	text-align: center;
+}
+
+.bmkg-quake-stat strong {
+	display: block;
+	font-size: 16px;
+	color: var(--bmkg-navy);
+	line-height: 1.25;
+	margin-bottom: 4px;
+}
+
+.bmkg-quake-stat--mag strong { color: var(--bmkg-danger); font-size: 22px; }
+
+.bmkg-quake-stat span {
+	display: block;
+	font-size: 10.5px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--bmkg-text-muted);
+}
+
+.bmkg-quake-note {
+	font-size: 12.5px;
+	color: var(--bmkg-text-soft);
+	line-height: 1.55;
+	margin: 0 0 8px;
+}
+.bmkg-quake-note strong { color: var(--bmkg-navy); }
+.bmkg-quake-note--potensi {
+	padding: 8px 12px;
+	background: var(--bmkg-blue-light);
+	border-radius: var(--radius-sm);
+	color: var(--bmkg-navy);
+	margin-bottom: 0;
+}
+
+.bmkg-info-card__shake {
+	margin: 0;
+	padding: 0 18px 18px;
+}
+.bmkg-info-card__shake img {
+	width: 100%;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--bmkg-border);
+	cursor: zoom-in;
+	transition: opacity .15s ease;
+}
+.bmkg-info-card__shake img:hover { opacity: 0.92; }
+.bmkg-info-card__shake figcaption {
+	margin-top: 8px;
+	font-size: 11px;
+	color: var(--bmkg-text-muted);
+	text-align: center;
+}
+
+/* ==========================================================================
+   V2.3 — FIX z-index dropdown vs peta, logo footer tanpa frame, dropdown wilayah
+   ========================================================================== */
+
+/* Poin 4: dropdown nav HARUS di atas peta Leaflet (Leaflet pakai z-index s/d 700) */
+.bmkg-header { z-index: 1000; }
+.bmkg-nav__sub { z-index: 1200 !important; }
+.leaflet-pane,
+.leaflet-top,
+.leaflet-bottom { z-index: 400 !important; }
+.leaflet-container { z-index: 1 !important; }
+
+/* Poin 12: logo footer TANPA frame bulatan */
+.bmkg-footer__brand-row img {
+	background: none !important;
+	border-radius: 0 !important;
+	padding: 0 !important;
+	width: 52px;
+	height: 52px;
+}
+
+/* Poin 5: dropdown datalist wilayah — kita ganti jadi custom, tapi bila datalist native
+   tetap dipakai browser, minimal beri lebar penuh. (solusi utama: custom list di JS) */
+.bmkg-mapsearch { position: relative; }
+.bmkg-wilayah-list {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	right: 0;
+	max-height: 280px;
+	overflow-y: auto;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	z-index: 1300;
+	display: none;
+	padding: 6px;
+}
+.bmkg-wilayah-list.is-open { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
+.bmkg-wilayah-list button {
+	text-align: left;
+	padding: 8px 12px;
+	font-size: 13px;
+	color: var(--bmkg-text);
+	border-radius: var(--radius-sm);
+	background: transparent;
+}
+.bmkg-wilayah-list button:hover { background: var(--bmkg-bg-soft); color: var(--bmkg-navy); }
+
+@media (max-width: 560px){
+	.bmkg-wilayah-list.is-open { grid-template-columns: 1fr; }
+}
+
+/* Poin 6: marker peta TANPA frame — hilangkan lingkaran & border */
+.bmkg-marker {
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	width: 54px !important;
+	height: 54px !important;
+}
+.bmkg-marker img { width: 34px !important; height: 34px !important; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); }
+.bmkg-marker .bmkg-marker__temp {
+	font-size: 11px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	text-shadow: 0 1px 2px rgba(255,255,255,0.9);
+	margin-top: -3px;
+}
+
+/* Poin 8: frame gempa & kualitas udara TIDAK kegedean — kompakkan */
+.bmkg-info-card__body--aqi { padding: 16px 18px; gap: 12px; align-items: center; }
+.bmkg-aqi__value { font-size: 26px; }
+.bmkg-aqi__face svg { width: 76px !important; height: 76px !important; }
+.bmkg-info-card__body { padding: 16px 18px; }
+.bmkg-grid--3 { gap: 18px; }
+
+/* ==========================================================================
+   V2.4 — Peringatan gaya Pusat, radar/satelit card, forecast kelurahan
+   ========================================================================== */
+
+/* Poin 10: kartu peringatan gaya BMKG Pusat (oranye lembut, bordir kiri) */
+.bmkg-warn {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 18px 22px;
+	background: #fdf0dd;
+	border: 1px solid #f5d9a8;
+	border-left: 4px solid #f0a12e;
+	border-radius: var(--radius-md);
+}
+.bmkg-warn--nil {
+	background: #eefaf1;
+	border-color: #bfe6cb;
+	border-left-color: var(--bmkg-success);
+}
+.bmkg-warn__icon {
+	flex-shrink: 0;
+	width: 44px; height: 44px;
+	display: inline-flex; align-items: center; justify-content: center;
+	color: #e08600;
+	background: rgba(240,161,46,0.16);
+	border-radius: 50%;
+}
+.bmkg-warn--nil .bmkg-warn__icon { color: var(--bmkg-success); background: rgba(22,163,74,0.12); }
+.bmkg-warn__body { flex: 1; min-width: 0; }
+.bmkg-warn__title { font-size: 15px; font-weight: 700; color: var(--bmkg-navy); margin: 0 0 4px; }
+.bmkg-warn__text { font-size: 13.5px; color: var(--bmkg-text-soft); margin: 0; line-height: 1.55; }
+.bmkg-warn__text strong { color: #b45309; font-weight: 700; }
+.bmkg-warn__kec { display: block; margin-top: 4px; font-size: 12.5px; color: var(--bmkg-text-muted); }
+.bmkg-warn__item { display: none; }
+.bmkg-warn__item.is-active { display: block; }
+.bmkg-warn__arrow {
+	flex-shrink: 0;
+	width: 34px; height: 34px;
+	display: inline-flex; align-items: center; justify-content: center;
+	color: var(--bmkg-navy);
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: 50%;
+}
+.bmkg-warn__arrow:hover { background: var(--bmkg-bg-soft); }
+
+/* Poin 11: kartu radar & satelit (fit, tidak norak) */
+.bmkg-imgcard {
+	margin: 0;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+}
+.bmkg-imgcard__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--bmkg-border);
+}
+.bmkg-imgcard__head h3 { font-size: 15px; color: var(--bmkg-navy); margin: 0; }
+.bmkg-imgcard__head span { font-size: 12px; color: var(--bmkg-text-muted); }
+.bmkg-imgcard__body {
+	position: relative;
+	background: var(--bmkg-bg-soft);
+	aspect-ratio: 4 / 3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.bmkg-imgcard__body img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	cursor: zoom-in;
+}
+.bmkg-imgcard__fallback {
+	display: none;
+	position: absolute;
+	inset: 0;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	color: var(--bmkg-text-muted);
+	text-align: center;
+	padding: 20px;
+}
+.bmkg-imgcard.is-error img { display: none; }
+.bmkg-imgcard.is-error .bmkg-imgcard__fallback { display: flex; }
+
+/* Forecast kelurahan: sub-nama kecamatan + loading */
+.bmkg-forecast-card__sub {
+	font-size: 11px;
+	color: var(--bmkg-text-muted);
+	margin: -2px 0 6px;
+	font-weight: 500;
+}
+.bmkg-forecast-loading {
+	padding: 40px 24px;
+	width: 100%;
+	text-align: center;
+	color: var(--bmkg-text-muted);
+	font-size: 14px;
+}
+
+/* Icon prakiraan tanpa filter aneh */
+.bmkg-forecast-card__icon img { filter: none; }
+
+/* ==========================================================================
+   V2.5 — Peringatan ikut Pusat (border penuh, TANPA strip kiri), header polish,
+   kartu prakiraan lebih kecil ala Pusat, gempa/AQI lebih ringkas
+   ========================================================================== */
+
+/* POIN 6: hilangkan strip kiri, border oranye penuh seperti Pusat */
+.bmkg-warn {
+	border: 1.5px solid #f4c77b;
+	border-left: 1.5px solid #f4c77b;
+	background: #fdf1de;
+	border-radius: 14px;
+	padding: 16px 20px;
+	gap: 14px;
+}
+.bmkg-warn--nil {
+	border: 1.5px solid #bfe6cb;
+	border-left: 1.5px solid #bfe6cb;
+	background: #eefaf1;
+}
+.bmkg-warn__icon {
+	width: 40px; height: 40px;
+	background: transparent;
+	color: #ea9e21;
+}
+.bmkg-warn--nil .bmkg-warn__icon { background: transparent; color: var(--bmkg-success); }
+.bmkg-warn__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	margin-top: 8px;
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--bmkg-blue);
+	text-decoration: none;
+}
+.bmkg-warn__link:hover { color: var(--bmkg-blue-hover); }
+
+/* POIN 5: header polish mengikuti Pusat — nav font & active pill biru muda */
+.bmkg-nav__link,
+.bmkg-nav__toggle {
+	font-size: 14.5px;
+	font-weight: 600;
+	color: #1f3350;
+}
+.bmkg-nav__link:hover,
+.bmkg-nav__toggle:hover { color: var(--bmkg-blue); }
+.bmkg-nav__link.is-active,
+.bmkg-nav__dropdown.is-active > .bmkg-nav__toggle {
+	color: var(--bmkg-blue);
+	background: var(--bmkg-blue-light);
+	border-radius: 8px;
+}
+/* dropdown sub: kartu putih rounded, shadow lembut seperti Pusat */
+.bmkg-nav__sub {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: 14px;
+	box-shadow: 0 12px 34px rgba(15,36,71,0.14);
+	padding: 10px;
+	min-width: 240px;
+}
+.bmkg-nav__sub a {
+	border-radius: 8px;
+	padding: 9px 14px;
+	font-size: 13.5px;
+	color: #26374f;
+}
+.bmkg-nav__sub a:hover { background: var(--bmkg-bg-soft); color: var(--bmkg-blue); }
+
+/* POIN 2: kartu prakiraan kelurahan lebih kecil + efek visual Pusat (bg gradasi lembut) */
+.bmkg-forecast-card {
+	flex: 0 0 158px;
+	padding: 14px 12px;
+	border: 1px solid #e6ecf5;
+	border-top: 1px solid #e6ecf5;
+	border-radius: 16px;
+	background: linear-gradient(180deg, #ffffff 0%, #f4f8fe 100%);
+	box-shadow: 0 2px 10px rgba(15,36,71,0.05);
+}
+.bmkg-forecast-card__name { font-size: 14px; }
+.bmkg-forecast-card__sub { font-size: 10.5px; }
+.bmkg-forecast-card__time { font-size: 11px; }
+.bmkg-forecast-card__icon { height: 46px; margin-bottom: 4px; }
+.bmkg-forecast-card__icon img { width: 44px !important; height: 44px !important; }
+.bmkg-forecast-card__temp { font-size: 24px; }
+.bmkg-forecast-card__cond { font-size: 12px; }
+
+/* POIN 3: gempa & kualitas udara lebih ringkas (tidak kepanjangan) */
+.bmkg-info-card { border-radius: 14px; }
+.bmkg-info-card__head { padding: 12px 16px; }
+.bmkg-info-card__head h2 { font-size: 14px; }
+.bmkg-info-card__body { padding: 14px 16px; }
+.bmkg-quake-wilayah { font-size: 13.5px; margin-bottom: 12px; }
+.bmkg-quake-stats { gap: 8px; margin-bottom: 10px; }
+.bmkg-quake-stat { padding: 9px 6px; }
+.bmkg-quake-stat strong { font-size: 14px; }
+.bmkg-quake-stat--mag strong { font-size: 18px; }
+.bmkg-quake-stat span { font-size: 9.5px; }
+.bmkg-quake-note { font-size: 12px; margin-bottom: 6px; }
+.bmkg-info-card__shake { padding: 0 16px 14px; }
+.bmkg-aqi__value { font-size: 22px; }
+.bmkg-aqi__label { font-size: 11px; }
+.bmkg-aqi__status { font-size: 12px; }
+.bmkg-aqi__face svg { width: 64px !important; height: 64px !important; }
+.bmkg-info-card__body--aqi { padding: 14px 16px; }
+
+/* ==========================================================================
+   V2.6 — Panel video + IKM
+   ========================================================================== */
+.bmkg-media-panel {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+	display: flex;
+	flex-direction: column;
+}
+.bmkg-media-panel__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--bmkg-border);
+}
+.bmkg-media-panel__head h2 { font-size: 14px; color: var(--bmkg-navy); margin: 0; }
+.bmkg-media-panel__head span { font-size: 12px; color: var(--bmkg-text-muted); }
+.bmkg-media-panel__video {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	background: #000;
+}
+.bmkg-media-panel__video iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+.bmkg-media-panel__ikm {
+	position: relative;
+	flex: 1;
+	background: var(--bmkg-bg-soft);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 200px;
+}
+.bmkg-media-panel__ikm img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	cursor: zoom-in;
+}
+.bmkg-media-panel__fallback {
+	display: none;
+	position: absolute;
+	inset: 0;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	color: var(--bmkg-text-muted);
+}
+.bmkg-media-panel__ikm.is-error img { display: none; }
+.bmkg-media-panel__ikm.is-error .bmkg-media-panel__fallback { display: flex; }
+
+/* ==========================================================================
+   V2.7 — POIN 8: animasi visual modern (pegawai, buletin, berita)
+   ========================================================================== */
+
+/* Kartu pegawai: hover lift + shine + entrance */
+.bmkg-staff-card {
+	transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease;
+	will-change: transform;
+	position: relative;
+	overflow: hidden;
+}
+.bmkg-staff-card::after {
+	content: '';
+	position: absolute;
+	top: 0; left: -75%;
+	width: 50%; height: 100%;
+	background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+	transform: skewX(-20deg);
+	transition: left .6s ease;
+	pointer-events: none;
+}
+.bmkg-staff-card:hover { transform: translateY(-6px); box-shadow: 0 14px 32px rgba(15,36,71,0.16); }
+.bmkg-staff-card:hover::after { left: 130%; }
+.bmkg-staff-card__photo img { transition: transform .5s ease; }
+.bmkg-staff-card:hover .bmkg-staff-card__photo img { transform: scale(1.05); }
+
+@keyframes bmkgFadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.bmkg-staff-card { animation: bmkgFadeUp .5s both; }
+.bmkg-staff-card:nth-child(1){ animation-delay:.05s; }
+.bmkg-staff-card:nth-child(2){ animation-delay:.12s; }
+.bmkg-staff-card:nth-child(3){ animation-delay:.19s; }
+.bmkg-staff-card:nth-child(4){ animation-delay:.26s; }
+.bmkg-staff-card:nth-child(5){ animation-delay:.33s; }
+.bmkg-staff-card:nth-child(6){ animation-delay:.40s; }
+
+/* Buletin & Berita slide: hover lift + gambar zoom halus */
+.bmkg-card--slide, .bmkg-bulletin-card--slide {
+	transition: transform .32s cubic-bezier(.2,.8,.2,1), box-shadow .32s ease;
+}
+.bmkg-card--slide:hover, .bmkg-bulletin-card--slide:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 14px 30px rgba(15,36,71,0.15);
+}
+.bmkg-card__media img, .bmkg-bulletin-card__poster img { transition: transform .5s ease; }
+.bmkg-card--slide:hover .bmkg-card__media img,
+.bmkg-bulletin-card--slide:hover .bmkg-bulletin-card__poster img { transform: scale(1.06); }
+
+/* Badge kategori muncul halus */
+.bmkg-card__badge { transition: transform .3s ease; }
+.bmkg-card--slide:hover .bmkg-card__badge { transform: translateY(-2px); }
+
+@media (prefers-reduced-motion: reduce) {
+	.bmkg-staff-card, .bmkg-card--slide, .bmkg-bulletin-card--slide,
+	.bmkg-staff-card::after, .bmkg-staff-card__photo img,
+	.bmkg-card__media img, .bmkg-bulletin-card__poster img {
+		animation: none !important;
+		transition: none !important;
+	}
+}
+
+/* ==========================================================================
+   V2.5 — Peringatan no-border, AQI Sultra, video, header refine, animasi
+   ========================================================================== */
+
+/* POIN 6: Peringatan dini — hilangkan LIST WARNA border kiri, ikuti Pusat (border rata) */
+.bmkg-warn {
+	border-left: 1px solid #f5d9a8;   /* samakan dgn border lain, bukan aksen tebal */
+}
+.bmkg-warn--nil { border-left: 1px solid #bfe6cb; }
+.bmkg-warn__link {
+	display: inline-block;
+	margin-top: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--bmkg-blue);
+}
+.bmkg-warn__link:hover { color: var(--bmkg-blue-hover); }
+
+/* POIN 3: Grid gempa (1) + AQI lebar (1) */
+.bmkg-grid--gempa-aqi { grid-template-columns: minmax(0,1fr) minmax(0,1.4fr); gap: 18px; }
+@media (max-width: 960px){ .bmkg-grid--gempa-aqi { grid-template-columns: 1fr; } }
+
+/* Gempa lebih ringkas */
+.bmkg-quake-stats { gap: 8px; margin-bottom: 10px; }
+.bmkg-quake-stat { padding: 9px 6px; }
+.bmkg-quake-stat strong { font-size: 14px; }
+.bmkg-quake-stat--mag strong { font-size: 19px; }
+.bmkg-quake-wilayah { font-size: 13.5px; margin-bottom: 10px; }
+.bmkg-info-card__shake { padding: 0 14px 14px; }
+
+/* AQI Sultra — kartu mini dalam slider */
+.bmkg-aqi-slider { position: relative; }
+.bmkg-aqi-card {
+	flex: 0 0 150px;
+	scroll-snap-align: start;
+	padding: 14px 12px;
+	text-align: center;
+	background: var(--bmkg-bg-soft);
+	border: 1px solid var(--bmkg-border-soft);
+	border-radius: var(--radius-md);
+}
+.bmkg-aqi-card__kota { font-size: 12.5px; font-weight: 700; color: var(--bmkg-navy); margin: 0 0 8px; }
+.bmkg-aqi-card__face { color: var(--bmkg-aqi-ok); margin-bottom: 6px; display:flex; justify-content:center; }
+.bmkg-aqi-card__face[data-face="good"]{ color: var(--bmkg-aqi-good); }
+.bmkg-aqi-card__face[data-face="ok"]  { color: var(--bmkg-aqi-ok); }
+.bmkg-aqi-card__face[data-face="warn"]{ color: var(--bmkg-aqi-warn); }
+.bmkg-aqi-card__face[data-face="bad"] { color: var(--bmkg-aqi-bad); }
+.bmkg-aqi-card__val { font-size: 17px; font-weight: 700; color: var(--bmkg-text); margin: 0 0 3px; }
+.bmkg-aqi-card__val em { font-style: normal; font-size: 10px; color: var(--bmkg-text-muted); font-weight: 500; }
+.bmkg-aqi-card__lbl { font-size: 10.5px; color: var(--bmkg-text-muted); margin: 0 0 6px; line-height: 1.4; min-height: 28px; }
+.bmkg-aqi-card__time { font-size: 10px; color: var(--bmkg-text-muted); font-family: var(--font-mono); margin: 0; }
+
+/* POIN 4: Video + media panel */
+.bmkg-media-panel {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+}
+.bmkg-media-panel__title {
+	font-size: 15px;
+	color: var(--bmkg-navy);
+	margin: 0;
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--bmkg-border);
+}
+.bmkg-media-panel__body { padding: 16px 18px; }
+.bmkg-video-embed {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	border-radius: 10px;
+	overflow: hidden;
+	background: #000;
+}
+.bmkg-video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* POIN 8: Animasi modern — fade-in-up untuk kartu pegawai, buletin, berita saat slide */
+@keyframes bmkgFadeUp {
+	from { opacity: 0; transform: translateY(14px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+.bmkg-staff-card,
+.bmkg-bulletin-card--slide,
+.bmkg-card--slide {
+	animation: bmkgFadeUp .5s ease both;
+}
+/* Stagger via nth-child */
+.bmkg-slider__track > *:nth-child(1),
+.bmkg-staff__track > *:nth-child(1) { animation-delay: .02s; }
+.bmkg-slider__track > *:nth-child(2),
+.bmkg-staff__track > *:nth-child(2) { animation-delay: .08s; }
+.bmkg-slider__track > *:nth-child(3),
+.bmkg-staff__track > *:nth-child(3) { animation-delay: .14s; }
+.bmkg-slider__track > *:nth-child(4),
+.bmkg-staff__track > *:nth-child(4) { animation-delay: .20s; }
+.bmkg-slider__track > *:nth-child(5) { animation-delay: .26s; }
+.bmkg-slider__track > *:nth-child(6) { animation-delay: .32s; }
+
+/* Hover angkat halus + shadow pada kartu pegawai */
+.bmkg-staff-card {
+	transition: transform .25s ease, box-shadow .25s ease;
+}
+.bmkg-staff-card:hover {
+	transform: translateY(-6px);
+	box-shadow: var(--shadow-lg);
+}
+.bmkg-staff-card__photo {
+	overflow: hidden;
+}
+.bmkg-staff-card__photo img {
+	transition: transform .4s ease;
+}
+.bmkg-staff-card:hover .bmkg-staff-card__photo img {
+	transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce){
+	.bmkg-staff-card, .bmkg-bulletin-card--slide, .bmkg-card--slide { animation: none; }
+}
+
+/* ==========================================================================
+   V2.6 — Petir realtime + Display Maritim + header refine (poin 5)
+   ========================================================================== */
+
+/* POIN 5: header nav mengikuti Pusat — teks navy tegas, hover blue-light, dropdown card */
+.bmkg-nav__list { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.bmkg-nav__list > li > a,
+.bmkg-nav__toggle {
+	display: inline-flex; align-items: center; gap: 5px;
+	padding: 10px 15px;
+	font-size: 14.5px;
+	font-weight: 600;
+	color: var(--bmkg-navy);
+	border-radius: var(--radius-sm);
+	background: transparent;
+	transition: background .15s ease, color .15s ease;
+}
+.bmkg-nav__list > li > a:hover,
+.bmkg-nav__toggle:hover { background: var(--bmkg-blue-light); color: var(--bmkg-navy); }
+.bmkg-nav__toggle[aria-expanded="true"] { background: var(--bmkg-blue-light); color: var(--bmkg-blue); }
+
+/* Dropdown sebagai card putih rapi (ikuti Pusat) */
+.bmkg-nav__sub {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	min-width: 230px;
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	padding: 8px;
+	list-style: none;
+	margin: 0;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-6px);
+	transition: opacity .16s ease, transform .16s ease, visibility .16s;
+	z-index: 1200;
+}
+.bmkg-nav__sub.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+.bmkg-nav__dropdown { position: relative; }
+.bmkg-nav__sub li a {
+	display: block;
+	padding: 9px 14px;
+	font-size: 13.5px;
+	font-weight: 500;
+	color: var(--bmkg-text);
+	border-radius: var(--radius-sm);
+	transition: background .13s ease, color .13s ease;
+}
+.bmkg-nav__sub li a:hover { background: var(--bmkg-bg-soft); color: var(--bmkg-navy); }
+
+/* Petir page */
+.bmkg-petir-layout { display: grid; grid-template-columns: minmax(0,1.9fr) minmax(0,1fr); gap: 20px; }
+@media (max-width: 960px){ .bmkg-petir-layout { grid-template-columns: 1fr; } }
+.bmkg-petir-legend-inline { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--bmkg-text-soft); flex-wrap: wrap; }
+.bmkg-petir-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 3px 0 6px; }
+.bmkg-petir-dot--now { background: #dc2626; }
+.bmkg-petir-dot--recent { background: #f59e0b; }
+.bmkg-petir-dot--old { background: #3b82f6; }
+.bmkg-petir-count { margin-left: auto; font-size: 12.5px; font-weight: 700; color: var(--bmkg-navy); font-family: var(--font-mono); }
+.bmkg-petir-stat { text-align: center; padding: 8px 0 16px; }
+.bmkg-petir-stat strong { display: block; font-size: 40px; font-weight: 700; color: var(--bmkg-navy); line-height: 1; }
+.bmkg-petir-stat span { font-size: 12px; color: var(--bmkg-text-muted); }
+.bmkg-petir-breakdown { display: grid; gap: 8px; margin: 0; padding-top: 12px; border-top: 1px solid var(--bmkg-border); }
+.bmkg-petir-breakdown div { display: flex; justify-content: space-between; align-items: center; }
+.bmkg-petir-breakdown dt { font-size: 13px; color: var(--bmkg-text-soft); }
+.bmkg-petir-breakdown dd { font-size: 15px; font-weight: 700; color: var(--bmkg-navy); margin: 0; font-family: var(--font-mono); }
+
+/* Display Maritim — kartu glassmorphism halus di atas theme putih */
+.bmkg-maritim-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0,1fr));
+	gap: 16px;
+}
+@media (max-width: 1100px){ .bmkg-maritim-grid { grid-template-columns: repeat(3,1fr); } }
+@media (max-width: 800px){ .bmkg-maritim-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 500px){ .bmkg-maritim-grid { grid-template-columns: 1fr; } }
+
+.bmkg-maritim-card {
+	border-radius: var(--radius-lg);
+	background:
+		radial-gradient(120% 120% at 0% 0%, rgba(0,102,204,0.06), transparent 60%),
+		var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	box-shadow: var(--shadow-sm);
+	transition: transform .2s ease, box-shadow .2s ease;
+}
+.bmkg-maritim-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.bmkg-maritim-card__glass {
+	position: relative;
+	padding: 18px 16px;
+	text-align: center;
+	border-radius: var(--radius-lg);
+	backdrop-filter: blur(6px);
+}
+.bmkg-maritim-card__nama { font-size: 13.5px; color: var(--bmkg-navy); margin: 0 0 12px; min-height: 34px; display:flex;align-items:center;justify-content:center; }
+.bmkg-maritim-card__icon { color: var(--bmkg-blue); display: flex; justify-content: center; margin-bottom: 8px; }
+.bmkg-maritim-card__icon[data-cond="cerah"]   { color: var(--bmkg-cerah); }
+.bmkg-maritim-card__icon[data-cond="berawan"] { color: var(--bmkg-berawan); }
+.bmkg-maritim-card__icon[data-cond="hujan"]   { color: var(--bmkg-hujan); }
+.bmkg-maritim-card__icon[data-cond="petir"]   { color: var(--bmkg-petir); }
+.bmkg-maritim-card__cond { font-size: 13px; font-weight: 600; color: var(--bmkg-text); margin: 0 0 12px; }
+.bmkg-maritim-card__meta { display: grid; gap: 6px; margin: 0 0 12px; text-align: left; }
+.bmkg-maritim-card__meta div { display: flex; justify-content: space-between; font-size: 12px; }
+.bmkg-maritim-card__meta dt { color: var(--bmkg-text-muted); }
+.bmkg-maritim-card__meta dd { color: var(--bmkg-navy); font-weight: 600; margin: 0; font-family: var(--font-mono); font-size: 11.5px; }
+.bmkg-maritim-card__badge {
+	display: inline-block;
+	padding: 4px 14px;
+	font-size: 11.5px;
+	font-weight: 700;
+	border-radius: var(--radius-full);
+}
+.bmkg-maritim-card__badge[data-level="aman"]    { background: #eafaf0; color: #15803d; }
+.bmkg-maritim-card__badge[data-level="waspada"] { background: #fef4e6; color: #b45309; }
+.bmkg-maritim-card__badge[data-level="bahaya"]  { background: #fdeaea; color: #b91c1c; }
+
+/* ==========================================================================
+   V2.7 — Balance sizing (gempa/AQI, video/IKM), layanan center, mega-menu
+   ========================================================================== */
+
+/* POIN 2: Shakemap gempa dikecilkan agar card gempa ≈ tinggi card AQI */
+.bmkg-info-card__shake img {
+	max-height: 240px;
+	width: auto;
+	max-width: 100%;
+	margin: 0 auto;
+	display: block;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--bmkg-border);
+}
+.bmkg-info-card__shake { text-align: center; }
+.bmkg-info-card__shake figcaption { font-size: 11px; color: var(--bmkg-text-muted); margin-top: 6px; }
+
+/* Samakan tinggi 2 card di grid gempa-aqi + beri sedikit ruang AQI */
+.bmkg-grid--gempa-aqi { align-items: stretch; }
+.bmkg-grid--gempa-aqi > .bmkg-info-card { display: flex; flex-direction: column; }
+.bmkg-info-card--aqiwide .bmkg-info-card__body { display: flex; align-items: center; }
+.bmkg-info-card--aqiwide .bmkg-aqi-slider { width: 100%; }
+
+/* POIN 3: Video & IKM disamakan tinggi (2 kolom seimbang) */
+.bmkg-grid--2 { align-items: stretch; }
+.bmkg-media-panel { display: flex; flex-direction: column; }
+.bmkg-media-panel__body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+/* IKM: gambar dibatasi tinggi supaya tidak jauh lebih panjang dari video */
+.bmkg-media-panel__body .bmkg-imgcard__body img {
+	max-height: 360px;
+	width: auto;
+	max-width: 100%;
+	margin: 0 auto;
+}
+
+/* POIN 5: Layanan Data — gambar figure di-TENGAH (bukan rata kiri) */
+.bmkg-data-figure { text-align: center; margin: 0 0 16px; }
+.bmkg-data-figure img {
+	display: block;
+	margin: 0 auto;
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--bmkg-border);
+}
+.bmkg-prose-card { text-align: left; }
+
+/* POIN 6: Header dropdown → MEGA-MENU gaya Pusat (card lebar, kolom + panel kiri) */
+.bmkg-header { position: sticky; top: 0; z-index: 1000; }
+.bmkg-nav__dropdown { position: static; }   /* biar sub bisa full-width */
+
+.bmkg-nav__sub {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	width: 100%;
+	min-width: 0;
+	max-width: var(--container-max);
+	margin: 6px auto 0;
+	padding: 0;
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-lg);
+	background: var(--bmkg-white);
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: 0;
+	overflow: hidden;
+}
+.bmkg-nav__sub::before {
+	content: attr(data-title);
+	grid-column: 1;
+	grid-row: 1;
+	align-self: stretch;
+	padding: 24px 22px;
+	background: var(--bmkg-bg-soft);
+	border-right: 1px solid var(--bmkg-border);
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+}
+.bmkg-nav__sub > li {
+	padding: 0;
+}
+.bmkg-nav__sub-inner {
+	grid-column: 2;
+	padding: 18px 22px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 2px 24px;
+	align-content: start;
+}
+.bmkg-nav__sub li a {
+	padding: 9px 10px;
+	font-size: 14px;
+	border-radius: var(--radius-sm);
+}
+
+/* Header nav center seperti Pusat */
+.bmkg-header__row { justify-content: space-between; }
+.bmkg-nav { flex: 1; display: flex; justify-content: center; }
+
+@media (max-width: 1024px){
+	.bmkg-nav__sub { grid-template-columns: 1fr; }
+	.bmkg-nav__sub::before { display: none; }
+	.bmkg-nav__sub-inner { grid-template-columns: 1fr 1fr; }
+}
+
+/* Embed card (petir iframe) */
+.bmkg-embed-card {
+	background: var(--bmkg-white);
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-sm);
+}
+.bmkg-embed-card__head {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 18px;
+	border-bottom: 1px solid var(--bmkg-border);
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+}
+.bmkg-embed-card__badge { color: var(--bmkg-petir); display: inline-flex; }
+.bmkg-embed-card__ext {
+	margin-left: auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--bmkg-blue);
+}
+.bmkg-embed-card__frame {
+	position: relative;
+	width: 100%;
+	height: 620px;
+	background: var(--bmkg-bg-soft);
+}
+.bmkg-embed-card__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+@media (max-width: 768px){ .bmkg-embed-card__frame { height: 460px; } }
+
+/* Breadcrumb */
+.bmkg-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--bmkg-text-muted); margin-bottom: 14px; }
+.bmkg-breadcrumb a { color: var(--bmkg-blue); }
+.bmkg-breadcrumb__current { color: var(--bmkg-text); font-weight: 600; }
+
+/* ==================================================================
+   POIN 7: MEGA MENU v2 — card kompak gaya Pusat (intro + link ber-ikon)
+   Menimpa gaya mega-menu lama (panel kiri ::before dihapus).
+   ================================================================== */
+.bmkg-nav__sub {
+	left: 50%;
+	right: auto;
+	transform: translateX(-50%) translateY(-6px);
+	width: max-content;
+	min-width: 480px;
+	max-width: min(880px, calc(100vw - 32px));
+	display: block;
+	padding: 0;
+	border: 1px solid var(--bmkg-border);
+	border-radius: var(--radius-lg);
+	background: var(--bmkg-white);
+	box-shadow: 0 18px 48px rgba(15, 36, 71, 0.14), 0 2px 8px rgba(15, 36, 71, 0.06);
+	overflow: hidden;
+}
+.bmkg-nav__sub.is-open { transform: translateX(-50%) translateY(0); }
+.bmkg-nav__sub::before { content: none; display: none; }
+
+.bmkg-nav__sub-inner.bmkg-mega {
+	display: grid;
+	grid-template-columns: 230px 1fr;
+	gap: 0;
+	padding: 0;
+}
+
+/* Panel intro kiri (icon + judul + deskripsi) */
+.bmkg-mega__intro {
+	padding: 22px 20px;
+	background: linear-gradient(160deg, var(--bmkg-blue-light) 0%, #f7f9fc 100%);
+	border-right: 1px solid var(--bmkg-border);
+}
+.bmkg-mega__intro-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	border-radius: 12px;
+	background: var(--bmkg-white);
+	color: var(--bmkg-blue);
+	border: 1px solid var(--bmkg-border);
+	box-shadow: var(--shadow-sm);
+	margin-bottom: 12px;
+}
+.bmkg-mega__intro h4 {
+	font-size: 17px;
+	font-weight: 700;
+	color: var(--bmkg-navy);
+	margin: 0 0 6px;
+}
+.bmkg-mega__intro p {
+	font-size: 12.5px;
+	line-height: 1.55;
+	color: var(--bmkg-text-muted);
+	margin: 0;
+}
+
+/* Daftar link kanan ber-ikon */
+.bmkg-mega__links {
+	padding: 14px;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(210px, 1fr));
+	gap: 2px 8px;
+	align-content: start;
+}
+.bmkg-mega__links > a {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	padding: 9px 10px;
+	border-radius: var(--radius-md);
+	transition: background .16s ease, transform .16s ease;
+}
+.bmkg-mega__links > a:hover {
+	background: var(--bmkg-bg-soft);
+	transform: translateX(2px);
+}
+.bmkg-mega__icon {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 9px;
+	background: var(--bmkg-blue-light);
+	color: var(--bmkg-blue);
+	transition: background .16s ease, color .16s ease;
+}
+.bmkg-mega__links > a:hover .bmkg-mega__icon {
+	background: var(--bmkg-blue);
+	color: #fff;
+}
+.bmkg-mega__text { display: flex; flex-direction: column; min-width: 0; }
+.bmkg-mega__text strong {
+	font-size: 13.5px;
+	font-weight: 600;
+	color: var(--bmkg-text);
+	line-height: 1.3;
+}
+.bmkg-mega__text small {
+	font-size: 11.5px;
+	color: var(--bmkg-text-muted);
+	line-height: 1.35;
+}
+
+/* Dropdown kecil (≤4 link) tetap rapi 1 kolom bila sempit */
+@media (max-width: 1024px) {
+	.bmkg-nav__sub {
+		display: none;
+		position: static;
+		transform: none;
+		width: 100%;
+		min-width: 0;
+		max-width: none;
+		box-shadow: none;
+		border: 1px solid var(--bmkg-border);
+		opacity: 1;
+		visibility: visible;
+	}
+	.bmkg-nav__sub.is-open { display: block; transform: none; }
+	.bmkg-nav__sub-inner.bmkg-mega { grid-template-columns: 1fr; }
+	.bmkg-mega__intro { display: none; }
+	.bmkg-mega__links { grid-template-columns: 1fr; padding: 8px; }
+}
+
+/* ==================================================================
+   POIN 8: SHINE EFFECT — kilau halus pada kartu buletin, berita, produk
+   Sapuan cahaya tipis saat hover + kilau otomatis lembut saat slide.
+   ================================================================== */
+.bmkg-bulletin-card,
+.bmkg-card--slide,
+.bmkg-produk-item,
+.bmkg-media-panel {
+	position: relative;
+	overflow: hidden;
+}
+.bmkg-bulletin-card::after,
+.bmkg-card--slide::after,
+.bmkg-produk-item::after,
+.bmkg-media-panel::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: -80%;
+	width: 55%;
+	height: 100%;
+	background: linear-gradient(
+		105deg,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0.28) 50%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	transform: skewX(-18deg);
+	pointer-events: none;
+	opacity: 0;
+	z-index: 2;
+}
+.bmkg-bulletin-card:hover::after,
+.bmkg-card--slide:hover::after,
+.bmkg-produk-item:hover::after,
+.bmkg-media-panel:hover::after {
+	opacity: 1;
+	animation: bmkg-shine-sweep 0.9s ease forwards;
+}
+@keyframes bmkg-shine-sweep {
+	0%   { left: -80%; }
+	100% { left: 130%; }
+}
+
+/* Teal left-border accent pada bulletin card saat hover */
+.bmkg-bulletin-card::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 3px;
+	height: 100%;
+	background: var(--bmkg-teal);
+	transform: scaleY(0);
+	transform-origin: bottom;
+	transition: transform .3s cubic-bezier(.4,0,.2,1);
+	z-index: 2;
+	border-radius: 3px 0 0 3px;
+}
+.bmkg-bulletin-card:hover::before {
+	transform: scaleY(1);
+}
+
+/* Pulse glow halus pada slider cards */
+.bmkg-slider__track .bmkg-bulletin-card,
+.bmkg-slider__track .bmkg-card--slide {
+	animation: bmkg-pulse-glow 6s ease-in-out infinite;
+}
+.bmkg-slider__track > *:nth-child(2n)  { animation-delay: 2s; }
+.bmkg-slider__track > *:nth-child(3n)  { animation-delay: 4s; }
+@keyframes bmkg-pulse-glow {
+	0%, 70%, 100% { border-color: var(--bmkg-border); }
+	80% { border-color: var(--bmkg-teal-light); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.bmkg-slider__track .bmkg-bulletin-card,
+	.bmkg-slider__track .bmkg-card--slide { animation: none; }
+}
+}
+
+
+/* ========================================================================== 
+   BETOAMBARI V4 — visual & service upgrade (2026)
+   ========================================================================== */
+body{position:relative}body::before{content:"";position:fixed;z-index:99999;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#00a651,#00a0df,#7355d9,#00a651);background-size:220% 100%;animation:bmkg-accent-flow 8s linear infinite;pointer-events:none}@keyframes bmkg-accent-flow{to{background-position:220% 0}}
+.bmkg-section__support{margin:6px 0 0;color:var(--bmkg-text-muted,#667085);font-size:13px;line-height:1.5}.bmkg-forecast-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 18px;padding:12px 14px;border:1px solid #e6edf5;background:rgba(255,255,255,.78);backdrop-filter:blur(12px);border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.05)}.bmkg-forecast-toolbar label{font-size:12px;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:.05em}.bmkg-kec-filter{min-width:190px;border:1px solid #d8e1eb;background:#fff;color:#172033;border-radius:10px;padding:10px 34px 10px 12px;font:inherit}.bmkg-source-note{margin-left:auto;font-size:12px;color:#64748b}
+.bmkg-forecast-card{position:relative;overflow:hidden;cursor:pointer;isolation:isolate;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;background:linear-gradient(145deg,#fff 35%,#f8fbff)}.bmkg-forecast-card::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#00a651,#00a0df,#7355d9);opacity:.8}.bmkg-forecast-card:hover,.bmkg-forecast-card:focus-visible{transform:translateY(-5px);box-shadow:0 18px 38px rgba(15,23,42,.13);outline:none;border-color:#b8d8ed}.bmkg-forecast-card--cerah{background:linear-gradient(145deg,#fff 35%,#fffbea)}.bmkg-forecast-card--berawan{background:linear-gradient(145deg,#fff 35%,#f1f6fb)}.bmkg-forecast-card--hujan{background:linear-gradient(145deg,#fff 30%,#eef8ff)}.bmkg-forecast-card--petir{background:linear-gradient(145deg,#fff 30%,#f4f0ff)}.bmkg-forecast-card.is-unavailable{opacity:.82}.bmkg-forecast-card__detail{display:inline-block;margin-top:10px;font-size:11px;font-weight:800;color:#0783be}.bmkg-forecast-card__temp span{font-size:28px}
+.bmkg-marker{filter:drop-shadow(0 8px 12px rgba(15,23,42,.18))}.bmkg-marker::after{content:"";position:absolute;inset:8px;border-radius:50%;border:2px solid rgba(0,160,223,.35);animation:bmkg-map-pulse 2s ease-out infinite;z-index:-1}@keyframes bmkg-map-pulse{0%{transform:scale(.7);opacity:.9}100%{transform:scale(1.55);opacity:0}}
+.bmkg-live-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#eef8ff;color:#0076aa;font-size:10px;font-weight:900;letter-spacing:.08em}.bmkg-air-official{display:grid;gap:16px}.bmkg-air-lead{margin:0;color:#475569;line-height:1.65}.bmkg-air-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.bmkg-air-legend span{padding:9px 10px;border-radius:10px;font-size:11px;font-weight:800;border:1px solid #e7edf4}.bmkg-air-legend [data-level="good"]{background:#eefbf4}.bmkg-air-legend [data-level="moderate"]{background:#fffbe8}.bmkg-air-legend [data-level="unhealthy"]{background:#fff3ed}.bmkg-air-legend [data-level="very"]{background:#fff0f4}.bmkg-air-legend [data-level="danger"]{background:#f5eefb}.bmkg-service-actions{display:flex;flex-wrap:wrap;gap:8px}.bmkg-service-actions a{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border-radius:10px;background:#0b7fb5;color:#fff!important;text-decoration:none;font-size:12px;font-weight:800}.bmkg-service-actions a:nth-child(2){background:#17365f}.bmkg-service-actions--center{justify-content:center;margin-top:12px}
+.bmkg-live-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.bmkg-live-service-card{position:relative;display:block;padding:22px;border:1px solid #e5edf4;border-radius:18px;background:radial-gradient(circle at 100% 0,rgba(0,160,223,.12),transparent 34%),#fff;color:inherit;text-decoration:none;box-shadow:0 10px 30px rgba(15,23,42,.06);transition:.25s ease}.bmkg-live-service-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(15,23,42,.11);border-color:#b8d8ed}.bmkg-live-service-card__icon{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#eff9fd;color:#0783be;font-size:22px}.bmkg-live-service-card h3{margin:16px 0 7px;font-size:17px}.bmkg-live-service-card p{margin:0 0 14px;color:#64748b;line-height:1.55;font-size:13px}.bmkg-live-service-card strong{font-size:12px;color:#0783be}
+.bmkg-weather-modal[hidden]{display:none}.bmkg-weather-modal{position:fixed;z-index:999999;inset:0;display:grid;place-items:center;padding:18px}.bmkg-weather-modal__backdrop{position:absolute;inset:0;background:rgba(8,18,33,.62);backdrop-filter:blur(7px)}.bmkg-weather-modal__dialog{position:relative;width:min(620px,100%);max-height:90vh;overflow:auto;background:rgba(255,255,255,.98);border:1px solid rgba(255,255,255,.7);border-radius:24px;padding:24px;box-shadow:0 28px 80px rgba(0,0,0,.28);animation:bmkg-modal-in .22s ease-out}@keyframes bmkg-modal-in{from{opacity:0;transform:translateY(16px) scale(.98)}}.bmkg-weather-modal__close{position:absolute;right:14px;top:12px;width:36px;height:36px;border:0;border-radius:50%;background:#f1f5f9;color:#334155;font-size:25px;cursor:pointer}.bmkg-weather-modal__head{display:flex;align-items:center;gap:14px;padding-right:38px}.bmkg-weather-modal__head img{width:74px;height:74px}.bmkg-weather-modal__head span{font-size:11px;font-weight:900;color:#0783be;text-transform:uppercase;letter-spacing:.08em}.bmkg-weather-modal__head h2{margin:3px 0;font-size:25px}.bmkg-weather-modal__head p{margin:0;color:#64748b}.bmkg-weather-modal__stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0}.bmkg-weather-modal__stats>div{padding:14px;border:1px solid #e8eef5;border-radius:14px;background:#f8fafc}.bmkg-weather-modal__stats span{display:block;color:#64748b;font-size:11px;margin-bottom:5px}.bmkg-weather-modal__stats strong{font-size:15px;color:#172033}.bmkg-weather-modal__source{font-size:11px;color:#64748b;border-top:1px solid #edf1f5;padding-top:13px;margin:0}.bmkg-modal-open{overflow:hidden}
+.bmkg-asset-placeholder{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:25px;text-align:center;border:1px dashed #cbd5e1;border-radius:14px;background:#f8fafc;color:#64748b}.bmkg-asset-placeholder strong{color:#334155}.bmkg-asset-placeholder code{font-size:11px}.bmkg-flow-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:16px 0}.bmkg-flow-steps>div{position:relative;padding:18px 12px;border:1px solid #e7edf4;border-radius:14px;text-align:center;background:#f8fbfd}.bmkg-flow-steps strong{display:grid;place-items:center;width:34px;height:34px;margin:0 auto 10px;border-radius:50%;background:#0783be;color:#fff}.bmkg-flow-steps span{font-size:12px;font-weight:700;color:#475569}
+.bmkg-flight-hero{position:relative;overflow:hidden;padding:74px 0 58px;background:radial-gradient(circle at 85% 15%,rgba(58,184,221,.22),transparent 28%),linear-gradient(135deg,#071a31,#0b4772 58%,#087ca5);color:#fff}.bmkg-flight-hero::after{content:"";position:absolute;right:-120px;bottom:-220px;width:500px;height:500px;border:1px solid rgba(255,255,255,.12);border-radius:50%;box-shadow:0 0 0 70px rgba(255,255,255,.035),0 0 0 140px rgba(255,255,255,.02)}.bmkg-flight-hero__inner{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;gap:35px}.bmkg-flight-hero__inner>div{max-width:760px}.bmkg-flight-kicker{font-size:11px;font-weight:900;letter-spacing:.13em;color:#8ce5ff}.bmkg-flight-hero h1{font-size:clamp(34px,5vw,58px);line-height:1.02;margin:13px 0 17px}.bmkg-flight-hero p{max-width:720px;margin:0;color:rgba(255,255,255,.78);line-height:1.7}.bmkg-flight-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}.bmkg-flight-badges span{padding:7px 10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:999px;font-size:11px;font-weight:800}.bmkg-flight-cta{flex:0 0 auto;padding:13px 16px;border-radius:12px;background:#fff;color:#07527d!important;text-decoration:none;font-size:12px;font-weight:900;box-shadow:0 12px 30px rgba(0,0,0,.18)}.bmkg-flight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.bmkg-flight-card{display:block;padding:22px;border:1px solid #e6edf4;border-radius:18px;background:#fff;text-decoration:none;color:inherit;box-shadow:0 8px 25px rgba(15,23,42,.055);transition:.25s ease}.bmkg-flight-card:hover{transform:translateY(-4px);box-shadow:0 17px 42px rgba(15,23,42,.11)}.bmkg-flight-card>span{font-size:11px;font-weight:900;color:#00a0df}.bmkg-flight-card h3{margin:12px 0 8px}.bmkg-flight-card p{min-height:62px;margin:0 0 15px;color:#64748b;line-height:1.55;font-size:13px}.bmkg-flight-card strong{font-size:12px;color:#0783be}.bmkg-flight-notice{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px;border-radius:18px;background:#eef7fb;border:1px solid #dbeef6}.bmkg-flight-notice strong{font-size:17px}.bmkg-flight-notice p{margin:6px 0 0;color:#526579}.bmkg-flight-notice a{white-space:nowrap;font-weight:800;color:#087dae;text-decoration:none}
+.bmkg-reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}.bmkg-reveal.is-visible{opacity:1;transform:none}@media (prefers-reduced-motion:reduce){body::before{animation:none}.bmkg-marker::after{animation:none}.bmkg-reveal{opacity:1;transform:none;transition:none}}@media(max-width:850px){.bmkg-live-service-grid,.bmkg-flight-grid{grid-template-columns:1fr 1fr}.bmkg-weather-modal__stats{grid-template-columns:1fr 1fr}.bmkg-flow-steps{grid-template-columns:1fr 1fr}.bmkg-flight-hero__inner{display:block}.bmkg-flight-cta{display:inline-flex;margin-top:24px}.bmkg-source-note{width:100%;margin-left:0}}@media(max-width:560px){.bmkg-live-service-grid,.bmkg-flight-grid,.bmkg-air-legend{grid-template-columns:1fr}.bmkg-weather-modal__dialog{padding:20px 16px}.bmkg-weather-modal__stats{grid-template-columns:1fr 1fr}.bmkg-flow-steps{grid-template-columns:1fr}.bmkg-flight-hero{padding:55px 0 42px}}
